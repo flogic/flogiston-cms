@@ -55,4 +55,8 @@ describe PagesController, "#params_from" do
   it "should generate params { :controller => 'pages', action => 'destroy', id => '1' } from DELETE /pages/1" do
     params_from(:delete, "/pages/1").should == {:controller => "pages", :action => "destroy", :id => "1"}
   end
+    
+  it "should generate params { :controller => 'pages', action => 'show', path => '1' } from GET /nonsensecontroller" do
+    params_from(:get, "/nonsensecontroller").should == {:controller => "pages", :action => "show", :path => ["nonsensecontroller"] }
+  end
 end
