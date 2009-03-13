@@ -1,5 +1,11 @@
 class PagesController < ApplicationController
   def show
-    @page = Page.find(params[:id])
+    if params[:id]
+      @page = Page.find(params[:id])
+    elsif params[:path] 
+      @page = Page.find_by_handle!(params[:path].first)
+    else
+      raise ActiveRecord::RecordNotFound
+    end
   end
 end
