@@ -36,4 +36,12 @@ describe Page do
       @page.reload.contents.should == 'Test Contents'
     end
   end
+
+  describe 'validations' do
+    it 'should require handles to be unique' do
+      Page.generate!(:handle => 'duplicate handle')
+      dup = Page.generate(:handle => 'duplicate handle')
+      dup.errors.should be_invalid(:handle)
+    end
+  end
 end
