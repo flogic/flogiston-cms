@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. .. spec_helper]))
 
 describe PagesController, "#route_for" do
   it "should map { :controller => 'pages', :action => 'index' } to /pages" do
