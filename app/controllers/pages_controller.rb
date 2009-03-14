@@ -7,5 +7,6 @@ class PagesController < ApplicationController
     else
       raise ActiveRecord::RecordNotFound
     end
+    @title = @page.title
   end
 end

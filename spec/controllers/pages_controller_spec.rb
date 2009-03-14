@@ -5,7 +5,7 @@ describe PagesController do
     describe 'when an id is specified' do
       describe 'which matches an existing Page id' do
         before :each do
-          @page = Page.generate!
+          @page = Page.generate!(:title => 'test title')
           @id = @page.id.to_s
           Page.stubs(:find).returns(@page)
         end
@@ -34,6 +34,11 @@ describe PagesController do
           response.should render_template('show')
         end
 
+        it 'should make the page title available to the view as a general title' do
+          do_get
+          assigns[:title].should == @page.title 
+        end
+
         it 'should use the default layout' do
           do_get
           response.layout.should be_nil
@@ -56,7 +61,7 @@ describe PagesController do
     describe 'which matches a page handle' do
       before :each do
         @handle = 'test_handle'
-        @page = Page.generate!(:handle => @handle)
+        @page = Page.generate!(:handle => @handle, :title => 'test title')
       end
 
       def do_get
@@ -81,6 +86,11 @@ describe PagesController do
       it 'should render the show view' do
         do_get
         response.should render_template('show')
+      end
+
+      it 'should make the page title available to the view as a general title' do
+        do_get
+        assigns[:title].should == @page.title 
       end
 
       it 'should use the default layout' do
