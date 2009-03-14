@@ -41,7 +41,7 @@ describe PagesController do
 
         it 'should use the default layout' do
           do_get
-          response.layout.should be_nil
+          response.layout.should == 'layouts/application'
         end
       end
 
@@ -95,7 +95,7 @@ describe PagesController do
 
       it 'should use the default layout' do
         do_get
-        response.layout.should be_nil
+        response.layout.should == 'layouts/application'
       end
     end
 
