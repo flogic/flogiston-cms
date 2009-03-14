@@ -2,6 +2,7 @@ class Admin::PagesController < ApplicationController
   layout 'admin'
 
   def show
+    @page = Page.find(params[:id])
   end
   
   def new
