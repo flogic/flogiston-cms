@@ -1,6 +1,9 @@
 class Admin::PagesController < ApplicationController
   layout 'admin'
 
+  def show
+  end
+  
   def new
     @page = Page.new
   end
