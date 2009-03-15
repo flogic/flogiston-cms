@@ -46,5 +46,13 @@ describe Admin::PagesController do
         response.should be_redirect
       end
     end
+
+    describe 'destroy' do
+      it 'should redirect' do
+        page = Page.generate!
+        delete :destroy, :id => page.id
+        response.should be_redirect
+      end
+    end
   end
 end

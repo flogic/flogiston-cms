@@ -247,4 +247,36 @@ describe Admin::PagesController do
       end
     end
   end
+
+  describe 'destroy' do
+    describe 'when given a valid page' do
+      before :each do
+        @page = Page.generate!
+        @id = @page.id.to_s
+      end
+
+      def do_delete
+        delete :destroy, :id => @id
+      end
+
+      it 'should destroy the specified page' do
+        lambda { do_delete }.should change(Page, :count).by(-1)
+      end
+
+      it 'should redirect to the admin pages list' do
+        do_delete
+        response.should redirect_to(admin_pages_path)
+      end
+    end
+
+    describe 'when attempting to destroy a non-existent page' do
+      def do_delete
+        delete :destroy, :id => 123456789
+      end
+      
+      it 'should result in a record not found exception' do
+        lambda { do_delete }.should raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
 end
