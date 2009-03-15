@@ -1,0 +1,7 @@
+- form_for [:admin, @page] do |f|
+  - unless f.error_messages.blank?
+    .errors= f.error_messages
+  = f.text_field :title
+  = f.text_field :handle
+  = f.text_area :contents
+  = f.submit 'Submit'
