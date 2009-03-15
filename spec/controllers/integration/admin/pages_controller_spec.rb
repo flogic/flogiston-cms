@@ -30,5 +30,21 @@ describe Admin::PagesController do
         response.should be_redirect
       end
     end
+
+    describe 'edit' do
+      it 'should be successful' do
+        page = Page.generate!
+        get :edit, :id => page.id
+        response.should be_success
+      end
+    end
+
+    describe 'update' do
+      it 'should redirect' do
+        page = Page.generate!
+        put :update, :id => page.id, :page => page.attributes
+        response.should be_redirect
+      end
+    end
   end
 end

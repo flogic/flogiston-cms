@@ -135,4 +135,116 @@ describe Admin::PagesController do
       end
     end
   end
+
+  describe 'edit' do
+    describe 'when editing an existing page' do
+      before :each do
+        @page = Page.generate!
+        @id = @page.id.to_s
+      end
+
+      def do_get
+        get :edit, :id => @id
+      end
+
+      it 'should be successful' do
+        do_get
+        response.should be_success
+      end
+
+      it 'should make the found page available to the view' do
+        do_get
+        assigns[:page].id.should == @page.id
+      end
+
+      it 'should render the edit template' do
+        do_get
+        response.should render_template('admin/pages/edit')
+      end
+
+      it 'should use the admin layout' do
+        do_get
+        response.layout.should == 'layouts/admin'
+      end
+    end
+
+    describe 'when attempting to edit a non-existent page' do
+      it 'should result in a record not found exception' do
+        lambda { get :edit, :id => 12345678 }.should raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
+
+  describe 'update' do
+    describe 'when given a valid page' do
+      before :each do
+        @page = Page.generate!
+        @id = @page.id.to_s
+      end
+
+      def do_put
+        put :update, :id => @id, :page => @page.attributes
+      end
+
+      it 'should not create a new page' do
+        lambda { do_put }.should_not change(Page, :count)
+      end
+
+      it 'should update the page with the provided attributes' do
+        do_put
+        Page.find(@id).handle.should == @page.handle
+      end
+
+      it 'should redirect to the admin show view for the updated page' do
+        do_put
+        response.should redirect_to(admin_page_url(Page.first))
+      end
+    end
+
+    describe 'when given an invalid page' do
+      before :each do
+        Page.generate!(:handle => 'duplicate_handle')
+        @page = Page.generate!
+        @id = @page.id.to_s
+      end
+
+      def do_put
+        put :update, :id => @id, :page => @page.attributes.merge(:handle => 'duplicate_handle')
+      end
+
+      it 'should be successful' do
+        do_put
+        response.should be_success
+      end
+
+      it 'should make the requested page available to the view' do
+        do_put
+        assigns[:page].id.should == @page.id
+      end
+
+      it 'should render the edit template' do
+        do_put
+        response.should render_template('edit')
+      end
+
+      it 'should use the admin layout' do
+        do_put
+        response.layout.should == 'layouts/admin'
+      end
+    end
+
+    describe 'when attempting to update a non-existent page' do
+      before :all do
+        Page.delete_all
+      end
+
+      def do_put
+        put :update, :id => 123456789, :page => { }
+      end
+
+      it 'should result in a record not found exception' do
+        lambda { do_put }.should raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
 end
