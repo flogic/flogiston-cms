@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. .. spec_helper
 
 describe Admin::PagesController do
   describe 'show' do
-    describe 'when the provided page can be found' do
+    describe 'when given an existing page' do
       before :each do
         @page = Page.generate!(:title => 'test title')
         @id = @page.id.to_s
@@ -39,7 +39,7 @@ describe Admin::PagesController do
       end
     end
 
-    describe 'when the provided page cannot be found' do
+    describe 'when attempting to show a non-existent page' do
       it 'should raise a record not found exception' do
         lambda { get :show, :id => 123456789 }.should raise_error(ActiveRecord::RecordNotFound)
       end
@@ -234,10 +234,6 @@ describe Admin::PagesController do
     end
 
     describe 'when attempting to update a non-existent page' do
-      before :all do
-        Page.delete_all
-      end
-
       def do_put
         put :update, :id => 123456789, :page => { }
       end
