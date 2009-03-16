@@ -9,6 +9,14 @@ describe Admin::PagesController do
       Page.delete_all
     end
 
+    describe 'index' do
+      it 'should be successful' do
+        @page = Page.generate!
+        get :index
+        response.should be_success
+      end
+    end
+
     describe 'show' do
       it 'should be successful' do
         @page = Page.generate!

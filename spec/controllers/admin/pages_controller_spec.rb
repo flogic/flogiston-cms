@@ -1,6 +1,65 @@
 require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. .. spec_helper]))
 
 describe Admin::PagesController do
+  describe 'index' do
+    def do_get
+      get :index
+    end
+
+    describe 'when no pages exist' do
+      before :each do
+        Page.delete_all
+      end
+
+      it 'should be successful' do
+        do_get
+        response.should be_success
+      end
+
+      it 'should make an empty page list available to the view' do
+        do_get
+        assigns[:pages].should == []
+      end
+
+      it 'should render the index view' do
+        do_get
+        response.should render_template('index')
+      end
+
+      it 'should use the admin layout' do
+        do_get
+        response.layout.should == 'layouts/admin'
+      end
+    end
+
+    describe 'when pages exist' do
+      before :each do
+        Page.delete_all
+        @pages = Array.new(3) { Page.generate! }
+      end
+
+      it 'should be successful' do
+        do_get
+        response.should be_success
+      end
+
+      it 'should make a list of the existing pages available to the view' do
+        do_get
+        assigns[:pages].collect(&:id).sort.should == @pages.collect(&:id).sort
+      end
+      
+      it 'should render the index view' do
+        do_get
+        response.should render_template('index')
+      end
+
+      it 'should use the admin layout' do
+        do_get
+        response.layout.should == 'layouts/admin'
+      end
+    end
+  end
+
   describe 'show' do
     describe 'when given an existing page' do
       before :each do
@@ -269,7 +328,7 @@ describe Admin::PagesController do
       def do_delete
         delete :destroy, :id => 123456789
       end
-      
+
       it 'should result in a record not found exception' do
         lambda { do_delete }.should raise_error(ActiveRecord::RecordNotFound)
       end
