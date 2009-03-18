@@ -9,6 +9,11 @@ describe 'admin/pages/edit' do
     render 'admin/pages/edit'
   end
 
+  it 'should include a link to the markdown syntax guide' do
+    do_render
+    response.should have_tag('a[href=?]', 'http://daringfireball.net/projects/markdown/syntax')
+  end
+  
   it 'should include a page update form' do
     do_render
     response.should have_tag('form[id=?]', "edit_page_#{@page.id}")

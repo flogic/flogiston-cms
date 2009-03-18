@@ -9,6 +9,11 @@ describe 'admin/pages/new' do
     render 'admin/pages/new'
   end
 
+  it 'should include a link to the markdown syntax guide' do
+    do_render
+    response.should have_tag('a[href=?]', 'http://daringfireball.net/projects/markdown/syntax')
+  end
+  
   it 'should include a page creation form' do
     do_render
     response.should have_tag('form[id=?]', 'new_page')
