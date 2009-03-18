@@ -262,6 +262,7 @@ describe Admin::PagesController do
 
     describe 'when given an invalid page' do
       before :each do
+        Page.delete_all
         Page.generate!(:handle => 'duplicate_handle')
         @page = Page.generate!
         @id = @page.id.to_s
