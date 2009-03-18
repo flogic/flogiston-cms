@@ -6,11 +6,13 @@ generate("rspec")
 
 plugin 'object_daddy', :git => 'git://github.com/flogic/object_daddy.git'
 
+gem 'rdiscount'
 gem 'mocha'
 gem 'haml'
 
 rake("gems:install")
 rake("gems:unpack")
+rake("gems:build")
 rake("db:migrate")
 rake("db:test:prepare")
 
