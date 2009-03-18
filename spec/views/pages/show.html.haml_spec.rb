@@ -19,4 +19,12 @@ describe 'pages/show' do
     response.should have_text(Regexp.new(Regexp.escape(@page.contents)))
   end
 
+  it 'should format the page contents with markdown' do
+    @page.contents = "
+ * whatever
+ * whatever else
+"
+    do_render
+    response.should have_tag('li', :text => /whatever/)
+  end
 end
