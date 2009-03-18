@@ -3,7 +3,7 @@
 # Rack is freely distributable under the terms of an MIT-style license.
 # See COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-$:.unshift(File.expand_path(File.dirname(__FILE__)))
+$: << File.expand_path(File.dirname(__FILE__))
 
 
 # The Rack main module, serving as a namespace for all core Rack
@@ -23,11 +23,12 @@ module Rack
 
   # Return the Rack release as a dotted string.
   def self.release
-    "0.4"
+    "1.0 bundled"
   end
 
   autoload :Builder, "rack/builder"
   autoload :Cascade, "rack/cascade"
+  autoload :Chunked, "rack/chunked"
   autoload :CommonLogger, "rack/commonlogger"
   autoload :ConditionalGet, "rack/conditionalget"
   autoload :ContentLength, "rack/content_length"
