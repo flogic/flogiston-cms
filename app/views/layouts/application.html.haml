@@ -1,6 +1,8 @@
 !!!
 %html
   %head
+    = stylesheet_link_tag 'application'
     %title= @title
   %body
-    = yield
+    #container
+      = yield
