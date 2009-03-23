@@ -1,8 +1,14 @@
-%table
-  - @pages.each do |page|
-    %tr
-      %td= page.handle
-      %td= page.title
-      %td= link_to 'show', admin_page_path(page)
-      %td= link_to 'edit', edit_admin_page_path(page)
-      %td= link_to 'delete', admin_page_path(page), :confirm => 'Are you sure?', :method => :delete
+%table#pages
+  %tbody
+    %tr.header
+      %th handle
+      %th title
+      %th actions
+    - @pages.each do |page|
+      %tr.body
+        %td= link_to("/" + page.handle, '/' + page.handle)
+        %td= page.title
+        %td.actions 
+          = link_to 'show', admin_page_path(page)
+          = link_to 'edit', edit_admin_page_path(page)
+          = link_to 'delete', admin_page_path(page), :confirm => 'Are you sure?', :method => :delete
