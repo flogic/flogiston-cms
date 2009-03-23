@@ -18,10 +18,10 @@ describe Admin::PagesController do
     end
 
     describe 'show' do
-      it 'should be successful' do
+      it 'should redirect' do
         @page = Page.generate!
         get :show, :id => @page.id
-        response.should be_success
+        response.should be_redirect
       end
     end
 

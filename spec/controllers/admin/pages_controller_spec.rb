@@ -66,47 +66,13 @@ describe Admin::PagesController do
   end
 
   describe 'show' do
-    describe 'when given an existing page' do
-      before :each do
-        @page = Page.generate!(:title => 'test title')
-        @id = @page.id.to_s
-        Page.stubs(:find).returns(@page)
-      end
-
-      def do_get
-        get :show, :id => @id
-      end
-
-      it 'should look up the requested page' do
-        Page.expects(:find).with(@id).returns(@page)
-        do_get
-      end
-
-      it 'should make the requested page available to the view' do
-        do_get
-        assigns[:page].should == @page
-      end
-
-      it 'should be successful' do
-        do_get
-        response.should be_success
-      end
-
-      it 'should render the show view' do
-        do_get
-        response.should render_template('show')
-      end
-
-      it 'should use the admin layout' do
-        do_get
-        response.layout.should == 'layouts/admin'
-      end
+    def do_get
+      get :show, :id => @id
     end
 
-    describe 'when attempting to show a non-existent page' do
-      it 'should raise a record not found exception' do
-        lambda { get :show, :id => 123456789 }.should raise_error(ActiveRecord::RecordNotFound)
-      end
+    it 'should redirect to the pages admin index' do
+      do_get
+      response.should redirect_to(admin_pages_path)
     end
   end
 

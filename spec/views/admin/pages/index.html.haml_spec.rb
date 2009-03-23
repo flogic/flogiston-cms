@@ -38,7 +38,7 @@ describe 'admin/pages/index' do
   it 'should include a show link for each page' do
     do_render
     @pages.each do |page|
-      response.should have_tag('a[href=?]:not([onclick*=?])', admin_page_path(page), 'delete')
+      response.should have_tag('a[href=?]:not([onclick*=?])', '/'+page.handle, 'delete')
     end
   end
 

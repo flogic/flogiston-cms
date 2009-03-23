@@ -6,7 +6,7 @@ class Admin::PagesController < ApplicationController
   end
 
   def show
-    @page = Page.find(params[:id])
+    redirect_to(admin_pages_path)
   end
 
   def new
