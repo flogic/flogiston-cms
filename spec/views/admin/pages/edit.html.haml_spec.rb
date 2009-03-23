@@ -9,9 +9,9 @@ describe 'admin/pages/edit' do
     render 'admin/pages/edit'
   end
 
-  it 'should include a link to the markdown syntax guide' do
+  it 'should include a link to open the markdown syntax guide on a new page' do
     do_render
-    response.should have_tag('a[href=?]', 'http://daringfireball.net/projects/markdown/syntax')
+    response.should have_tag('a[href=?][target=?]', 'http://daringfireball.net/projects/markdown/syntax', '_blank')
   end
   
   it 'should include a page update form' do

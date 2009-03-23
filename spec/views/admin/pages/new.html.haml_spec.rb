@@ -11,7 +11,7 @@ describe 'admin/pages/new' do
 
   it 'should include a link to the markdown syntax guide' do
     do_render
-    response.should have_tag('a[href=?]', 'http://daringfireball.net/projects/markdown/syntax')
+    response.should have_tag('a[href=?][target=?]', 'http://daringfireball.net/projects/markdown/syntax', '_blank')
   end
   
   it 'should include a page creation form' do
