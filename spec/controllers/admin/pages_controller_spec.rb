@@ -240,7 +240,7 @@ describe Admin::PagesController do
       end
 
       def do_put
-        put :update, :id => @id, :page => @page.attributes.merge(:handle => 'duplicate_handle')
+        put :update, :id => @id, :page => @page.attributes.merge('handle' => 'duplicate_handle')
       end
 
       it 'should be successful' do
