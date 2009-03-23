@@ -4,5 +4,9 @@
     %title= @title
     = stylesheet_link_tag 'admin'
   %body
+    #header
+      %ul
+        %li= link_to 'pages', admin_pages_path
+        %li= link_to 'new page', new_admin_page_path
     #container
       = yield
