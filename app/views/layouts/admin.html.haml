@@ -1,1 +1,8 @@
-= yield
+!!!
+%html
+  %head
+    %title= @title
+    = stylesheet_link_tag 'admin'
+  %body
+    #container
+      = yield
