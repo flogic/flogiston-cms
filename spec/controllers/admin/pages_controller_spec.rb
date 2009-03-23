@@ -30,6 +30,11 @@ describe Admin::PagesController do
         do_get
         response.layout.should == 'layouts/admin'
       end
+      
+      it 'should set the page title' do
+        do_get
+        assigns[:title].should_not be_blank
+      end
     end
 
     describe 'when pages exist' do
@@ -61,6 +66,11 @@ describe Admin::PagesController do
       it 'should use the admin layout' do
         do_get
         response.layout.should == 'layouts/admin'
+      end
+      
+      it 'should set the page title' do
+        do_get
+        assigns[:title].should_not be_blank
       end
     end
   end
@@ -100,6 +110,11 @@ describe Admin::PagesController do
       do_get
       response.layout.should == 'layouts/admin'
     end
+      
+    it 'should set the page title' do
+      do_get
+      assigns[:title].should_not be_blank
+    end    
   end
 
   describe 'create' do
@@ -163,6 +178,11 @@ describe Admin::PagesController do
         do_post
         response.layout.should == 'layouts/admin'
       end
+      
+      it 'should set the page title' do
+        do_post
+        assigns[:title].should_not be_blank
+      end
     end
   end
 
@@ -195,6 +215,11 @@ describe Admin::PagesController do
       it 'should use the admin layout' do
         do_get
         response.layout.should == 'layouts/admin'
+      end
+
+      it 'should set the page title' do
+        do_get
+        assigns[:title].should_not be_blank
       end
     end
 
@@ -261,6 +286,11 @@ describe Admin::PagesController do
       it 'should use the admin layout' do
         do_put
         response.layout.should == 'layouts/admin'
+      end
+      
+      it 'should set the page title' do
+        do_put
+        assigns[:title].should_not be_blank
       end
     end
 

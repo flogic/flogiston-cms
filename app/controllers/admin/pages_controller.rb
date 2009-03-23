@@ -3,6 +3,7 @@ class Admin::PagesController < ApplicationController
 
   def index
     @pages = Page.all.sort_by(&:handle)
+    @title = 'View all pages'
   end
 
   def show
@@ -11,6 +12,7 @@ class Admin::PagesController < ApplicationController
 
   def new
     @page = Page.new
+    @title = 'New Page'
   end
 
   def create
@@ -18,12 +20,14 @@ class Admin::PagesController < ApplicationController
     if @page.save
       redirect_to(admin_page_path(@page))
     else
+      @title = 'New Page'
       render :action => 'new'
     end
   end
 
   def edit
     @page = Page.find(params[:id])
+    @title = "Editing page '#{@page.title}'"
   end
 
   def update
@@ -31,6 +35,7 @@ class Admin::PagesController < ApplicationController
     if @page.update_attributes(params[:page])
       redirect_to(admin_page_path(@page))
     else
+      @title = "Editing page '#{@page.title}'"
       render :action => 'edit'
     end
   end
