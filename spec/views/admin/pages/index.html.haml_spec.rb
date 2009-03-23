@@ -35,10 +35,10 @@ describe 'admin/pages/index' do
     end
   end
 
-  it 'should include a show link for each page' do
+  it 'should include a show link for each page which opens the page in a new window' do
     do_render
     @pages.each do |page|
-      response.should have_tag('a[href=?]:not([onclick*=?])', '/'+page.handle, 'delete')
+      response.should have_tag('a[href=?][target=?]:not([onclick*=?])', '/'+page.handle, '_blank', 'delete')
     end
   end
 
