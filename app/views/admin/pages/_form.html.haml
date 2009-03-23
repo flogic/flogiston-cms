@@ -1,8 +1,19 @@
-%a{:href => 'http://daringfireball.net/projects/markdown/syntax'} markdown syntax guide
 - form_for [:admin, @page] do |f|
+  .guide
+    %a{:href => 'http://daringfireball.net/projects/markdown/syntax'} markdown syntax guide
   - unless f.error_messages.blank?
     .errors= f.error_messages
-  = f.text_field :title
-  = f.text_field :handle
-  = f.text_area :contents
-  = f.submit 'Submit'
+  .field
+    %label{:for => 'page_title'}
+      Title:
+    = f.text_field :title
+  .field
+    %label{:for => 'page_handle'}
+      Path:
+    = '/' + f.text_field(:handle)
+  .field
+    %label{:for => 'page_contents'}
+      Contents:
+    = f.text_area :contents
+  .submit
+    = f.submit 'Submit'
