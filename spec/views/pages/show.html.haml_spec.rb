@@ -9,11 +9,6 @@ describe 'pages/show' do
     render 'pages/show'
   end
 
-  it 'should include the page title' do
-    do_render
-    response.should have_text(Regexp.new(Regexp.escape(@page.title)))
-  end
-  
   it 'should include the page contents' do
     do_render
     response.should have_text(Regexp.new(Regexp.escape(@page.contents)))
