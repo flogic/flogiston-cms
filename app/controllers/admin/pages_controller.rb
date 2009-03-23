@@ -2,7 +2,7 @@ class Admin::PagesController < ApplicationController
   layout 'admin'
 
   def index
-    @pages = Page.all
+    @pages = Page.all.sort_by(&:handle)
   end
 
   def show

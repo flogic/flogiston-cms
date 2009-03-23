@@ -35,7 +35,7 @@ describe Admin::PagesController do
     describe 'when pages exist' do
       before :each do
         Page.delete_all
-        @pages = Array.new(3) { Page.generate! }
+        @pages = Array.new(3) { |i| Page.generate!(:handle => "test handle #{10-i}") }
       end
 
       it 'should be successful' do
@@ -46,6 +46,11 @@ describe Admin::PagesController do
       it 'should make a list of the existing pages available to the view' do
         do_get
         assigns[:pages].collect(&:id).sort.should == @pages.collect(&:id).sort
+      end
+      
+      it 'should sort the pages by handle' do
+        do_get
+        assigns[:pages].collect(&:id).should == @pages.sort_by(&:handle).collect(&:id)
       end
       
       it 'should render the index view' do
