@@ -1,6 +1,6 @@
 - form_for [:admin, @page] do |f|
   .guide
-    %a{:href => 'http://daringfireball.net/projects/markdown/syntax', :target => '_blank'} markdown syntax guide
+    = link_to 'markdown syntax guide', 'http://daringfireball.net/projects/markdown/syntax', :target => '_blank'
   - unless f.error_messages.blank?
     .errors= f.error_messages
   .field
