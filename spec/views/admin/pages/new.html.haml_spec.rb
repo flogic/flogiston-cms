@@ -50,11 +50,34 @@ describe 'admin/pages/new' do
         with_tag('textarea[name=?]', 'page[contents]')
       end
     end
+    
+    it 'should have a preview button' do
+      do_render
+      response.should have_tag('form[id=?]', 'new_page') do
+        with_tag('input[type=?][value=?]', 'submit', 'Preview')
+      end
+    end
+    
+    it 'should have a preview input' do
+      do_render
+      response.should have_tag('form[id=?]', 'new_page') do
+        with_tag('input[type=?][name=?]:not([value])', 'hidden', 'preview')
+      end
+    end
+    
+    describe 'preview button' do
+      it 'should set the preview input to true' do
+        do_render
+        response.should have_tag('form[id=?]', 'new_page') do
+          with_tag('input[type=?][value=?][onclick*=?][onclick*=?]', 'submit', 'Preview', 'preview', 'true')
+        end
+      end
+    end
 
     it 'should have a submit button' do
       do_render
       response.should have_tag('form[id=?]', 'new_page') do
-        with_tag('input[type=?]', 'submit')
+        with_tag('input[type=?]:not([value=?])', 'submit', 'Preview')
       end
     end
 
