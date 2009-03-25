@@ -32,7 +32,9 @@ class Admin::PagesController < ApplicationController
 
   def update
     @page = Page.find(params[:id])
-    if @page.update_attributes(params[:page])
+    @page.attributes = params[:page]
+    
+    if !params[:preview] and @page.save
       redirect_to(admin_page_path(@page))
     else
       @title = "Editing page '#{@page.title}'"

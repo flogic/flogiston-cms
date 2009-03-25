@@ -254,6 +254,46 @@ describe Admin::PagesController do
         do_put
         response.should redirect_to(admin_page_url(Page.first))
       end
+      
+      describe 'and previewing' do
+        before :each do
+          @new_contents = 'new contents go here'
+        end
+        
+        def do_put
+          put :update, :id => @id, :page => @page.attributes.merge('contents' => @new_contents), :preview => true
+        end
+        
+        it 'should make the requested page available to the view' do
+          do_put
+          assigns[:page].id.should == @page.id
+        end
+        
+        it 'should set the page attributes' do
+          do_put
+          assigns[:page].contents.should == @new_contents
+        end
+        
+        it 'should not save the attributes' do
+          do_put
+          Page.find(@id).contents.should_not == @new_contents
+        end
+
+        it 'should render the edit template' do
+          do_put
+          response.should render_template('edit')
+        end
+
+        it 'should use the admin layout' do
+          do_put
+          response.layout.should == 'layouts/admin'
+        end
+
+        it 'should set the page title' do
+          do_put
+          assigns[:title].should_not be_blank
+        end
+      end
     end
 
     describe 'when given an invalid page' do
