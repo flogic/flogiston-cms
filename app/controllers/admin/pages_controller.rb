@@ -17,7 +17,8 @@ class Admin::PagesController < ApplicationController
 
   def create
     @page = Page.new(params[:page])
-    if @page.save
+    
+    if !params[:preview] and @page.save
       redirect_to(admin_page_path(@page))
     else
       @title = 'New Page'
