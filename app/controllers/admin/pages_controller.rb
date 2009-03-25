@@ -18,7 +18,7 @@ class Admin::PagesController < ApplicationController
   def create
     @page = Page.new(params[:page])
     
-    if !params[:preview] and @page.save
+    if !preview? and @page.save
       redirect_to(admin_page_path(@page))
     else
       @title = 'New Page'
@@ -35,7 +35,7 @@ class Admin::PagesController < ApplicationController
     @page = Page.find(params[:id])
     @page.attributes = params[:page]
     
-    if !params[:preview] and @page.save
+    if !preview? and @page.save
       redirect_to(admin_page_path(@page))
     else
       @title = "Editing page '#{@page.title}'"
@@ -47,5 +47,12 @@ class Admin::PagesController < ApplicationController
     page = Page.find(params[:id])
     page.destroy
     redirect_to admin_pages_path
+  end
+  
+  
+  private
+  
+  def preview?
+    !params[:preview].blank?
   end
 end

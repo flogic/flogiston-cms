@@ -181,6 +181,16 @@ describe Admin::PagesController do
           assigns[:title].should_not be_blank
         end
       end
+      
+      describe 'with an empty preview parameter' do
+        def do_post
+          post :create, :page => @page.attributes, :preview => ''
+        end
+        
+        it 'should create a new page' do
+          lambda { do_post }.should change(Page, :count).by(1)
+        end
+      end
     end
 
     describe 'when given an invalid page' do
@@ -274,10 +284,11 @@ describe Admin::PagesController do
       before :each do
         @page = Page.generate!
         @id = @page.id.to_s
+        @new_handle = 'some_unused_handle_I_really_hope'
       end
 
       def do_put
-        put :update, :id => @id, :page => @page.attributes
+        put :update, :id => @id, :page => @page.attributes.merge('handle' => @new_handle)
       end
 
       it 'should not create a new page' do
@@ -286,7 +297,7 @@ describe Admin::PagesController do
 
       it 'should update the page with the provided attributes' do
         do_put
-        Page.find(@id).handle.should == @page.handle
+        Page.find(@id).handle.should == @new_handle
       end
 
       it 'should redirect to the admin show view for the updated page' do
@@ -331,6 +342,17 @@ describe Admin::PagesController do
         it 'should set the page title' do
           do_put
           assigns[:title].should_not be_blank
+        end
+      end
+      
+      describe 'with an empty preview parameter' do
+        def do_put
+          put :update, :id => @id, :page => @page.attributes.merge('handle' => @new_handle), :preview => ''
+        end
+        
+        it 'should update the page with the provided attributes' do
+          do_put
+          Page.find(@id).handle.should == @new_handle
         end
       end
     end
