@@ -19,8 +19,8 @@ describe 'admin/pages/edit' do
     response.should have_tag('form[id=?]', "edit_page_#{@page.id}")
   end
 
-  describe 'page creation form' do
-    it 'should point to the page create action' do
+  describe 'page update form' do
+    it 'should point to the page update action' do
       do_render
       response.should have_tag('form[id=?][action=?]', "edit_page_#{@page.id}", admin_page_path(@page))
     end
