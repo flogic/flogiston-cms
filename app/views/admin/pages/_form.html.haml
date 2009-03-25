@@ -1,4 +1,4 @@
-- form_for [:admin, @page] do |f|
+- form_for [:admin, page] do |f|
   .guide
     = link_to 'markdown syntax guide', 'http://daringfireball.net/projects/markdown/syntax', :target => '_blank'
   - unless f.error_messages.blank?
@@ -17,3 +17,6 @@
     = f.text_area :contents
   .submit
     = f.submit 'Submit'
+
+#preview
+  = render :partial => 'pages/show', :locals => { :page => page }

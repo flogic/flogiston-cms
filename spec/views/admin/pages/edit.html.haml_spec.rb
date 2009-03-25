@@ -99,4 +99,25 @@ describe 'admin/pages/edit' do
       end
     end
   end
+  
+  it 'should have a preview area' do
+    do_render
+    response.should have_tag('div[id=?]', 'preview')
+  end
+  
+  describe 'preview area' do
+    before :each do
+        @page.contents = "
+ * whatever
+ * whatever else
+"
+    end
+    
+    it 'should include the page contents formatted with markdown' do
+      do_render
+      response.should have_tag('div[id=?]', 'preview') do
+        with_tag('li', :text => /whatever/)
+      end
+    end
+  end
 end
