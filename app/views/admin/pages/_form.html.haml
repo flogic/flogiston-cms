@@ -18,5 +18,6 @@
   .submit
     = f.submit 'Submit'
 
-#preview
-  = render :partial => 'pages/show', :locals => { :page => page }
+- unless page.contents.blank?
+  #preview
+    = render :partial => 'pages/show', :locals => { :page => page }

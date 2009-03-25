@@ -100,11 +100,6 @@ describe 'admin/pages/edit' do
     end
   end
   
-  it 'should have a preview area' do
-    do_render
-    response.should have_tag('div[id=?]', 'preview')
-  end
-  
   describe 'preview area' do
     before :each do
         @page.contents = "
@@ -112,12 +107,36 @@ describe 'admin/pages/edit' do
  * whatever else
 "
     end
-    
+
+    it 'should exist if the page has contents' do
+      do_render
+      response.should have_tag('div[id=?]', 'preview')
+    end
+
+
     it 'should include the page contents formatted with markdown' do
       do_render
       response.should have_tag('div[id=?]', 'preview') do
         with_tag('li', :text => /whatever/)
       end
+    end
+
+    it 'should not exist if the page contents are the empty string' do
+      @page.contents = ''
+      do_render
+      response.should_not have_tag('div[id=?]', 'preview')
+    end
+
+    it 'should not exist if the page contents are nil' do
+      @page.contents = nil
+      do_render
+      response.should_not have_tag('div[id=?]', 'preview')
+    end
+
+    it 'should not exist if the page contents are a completely blank string' do
+      @page.contents = '     '
+      do_render
+      response.should_not have_tag('div[id=?]', 'preview')
     end
   end
 end
