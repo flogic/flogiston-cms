@@ -31,7 +31,7 @@ end
 
 # install our stylesheets to the application
 puts "Installing plugin stylesheets #{plugin_path('public/stylesheets/sass')} to #{rails_path('public/stylesheets')}..."
-FileUtils.copy(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
+FileUtils.cp_r(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
 
 # install our database migrations to the application
 if File.directory?(rails_path('db/migrate'))

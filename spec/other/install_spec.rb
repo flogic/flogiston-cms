@@ -14,6 +14,7 @@ describe 'the plugin install.rb script' do
     FileUtils.stubs(:rm_rf)
     FileUtils.stubs(:mkdir)
     FileUtils.stubs(:copy)
+    FileUtils.stubs(:cp_r)
     File.stubs(:directory?).returns(true)
     self.stubs(:system).returns(true)
     self.stubs(:puts).returns(true)
@@ -64,7 +65,7 @@ describe 'the plugin install.rb script' do
   end
 
   it 'should copy in the stylesheets to the public/ directory' do
-      FileUtils.expects(:copy).with(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
+      FileUtils.expects(:cp_r).with(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
     do_install
   end
 
