@@ -1,9 +1,10 @@
 %table#pages
-  %tbody
+  %thead
     %tr.header
       %th handle
       %th title
       %th actions
+  %tbody
     - @pages.each do |page|
       %tr.body
         %td= link_to("/" + page.handle, '/' + page.handle, { :target => '_blank' })
