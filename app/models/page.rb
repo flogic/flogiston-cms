@@ -20,4 +20,8 @@ class Page < ActiveRecord::Base
       true
     end
   end
+  
+  def path
+    "/#{handle}"
+  end
 end

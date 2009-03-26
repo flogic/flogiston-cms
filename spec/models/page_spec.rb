@@ -137,4 +137,15 @@ describe Page do
       @page.valid_handle?.should == result
     end
   end
+  
+  it 'should have a path' do
+    @page.should respond_to(:path)
+  end
+  
+  describe 'path' do
+    it 'should be the handle with a prepended /' do
+      @page.stubs(:handle).returns('some_handle')
+      @page.path.should == '/some_handle'
+    end
+  end
 end
