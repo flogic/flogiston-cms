@@ -5,4 +5,14 @@ Flogiston
  TBD
 
 
+POST-INSTALLATION:
+
+ - rake gems:install
+ - rake gems:unpack
+ - rake gems:build
+ - rake db:migrate
+
+
+
+
 Copyright (c) 2009 Flawed Logic, OG Consulting, Kevin Barnes, Rick Bradley, Yossef Mendelssohn, released under the MIT license
