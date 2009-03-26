@@ -43,6 +43,24 @@ describe Page do
       dup = Page.generate(:handle => 'duplicate handle')
       dup.errors.should be_invalid(:handle)
     end
+    
+    it 'should check if the handle is valid according to the class' do
+      handle = '/some_crazy_handle'
+      Page.expects(:valid_handle?).with(handle).returns(true)
+      Page.generate(:handle => handle)
+    end
+    
+    it 'should require the handle to be valid according to the class' do
+      Page.stubs(:valid_handle?).returns(false)
+      page = Page.generate(:handle => 'some_handle')
+      page.errors.should be_invalid(:handle)
+    end
+    
+    it 'should accept handles that are valid according to the class' do
+      Page.stubs(:valid_handle?).returns(true)
+      page = Page.generate(:handle => 'some_handle')
+      page.errors.should_not be_invalid(:handle)
+    end
   end
   
   describe 'as a class' do
