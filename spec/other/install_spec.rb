@@ -12,6 +12,8 @@ end
 describe 'the plugin install.rb script' do
   before :each do
     FileUtils.stubs(:rm_rf)
+    FileUtils.stubs(:mkdir)
+    FileUtils.stubs(:copy).with(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
     self.stubs(:system).returns(true)
     self.stubs(:puts).returns(true)
   end
@@ -54,8 +56,18 @@ describe 'the plugin install.rb script' do
       FileUtils.expects(:rm_rf).with(plugin_path('tmp'))
       do_install
     end
-  end
+    
+    it 'should create a new config directory' do
+      FileUtils.expects(:mkdir).with(plugin_path('config'))
+      do_install
+    end
 
+    it 'should copy in the plugin routes file to the new config directory' do
+      FileUtils.expects(:copy).with(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
+      do_install
+    end
+  end
+    
   describe 'when a RAILS_ROOT/db/migrate directory exists' do
     it "should copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
       File.stubs(:directory?).with(rails_path('db/migrate')).returns(true)
@@ -94,6 +106,10 @@ describe 'the plugin install.rb script' do
   end
 
   describe 'readme_contents' do
+    before :each do
+      FileUtils.stubs(:copy)   # this is to work-around a mocha bug about stubs and negative expectations
+    end
+    
     it 'should work without arguments' do
       do_install
       lambda { readme_contents }.should_not raise_error(ArgumentError)
