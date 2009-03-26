@@ -75,13 +75,13 @@ describe 'the plugin install.rb script' do
       
       it 'should create RAILS_ROOT/db/migrate when RAILS_ROOT/db exists' do
         File.stubs(:directory?).with(rails_path('db')).returns(true)
-        File.expects(:mkdir).with(rails_path('db/migrate'))
+        FileUtils.expects(:mkdir).with(rails_path('db/migrate'))
         do_install
       end
       
       it 'should not create RAILS_ROOT/db/migrate when RAILS_ROOT/db does not exist' do
         File.stubs(:directory?).with(rails_path('db')).returns(false)
-        File.expects(:mkdir).with(rails_path('db/migrate')).never
+        FileUtils.expects(:mkdir).with(rails_path('db/migrate')).never
         do_install
       end
     end

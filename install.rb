@@ -26,7 +26,7 @@ puts "Copying in plugin-specific routes to config/routes.rb..."
 FileUtils.copy(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
 
 if File.directory?(rails_path('db')) and ! File.directory?(rails_path('db/migrate'))
-  File.mkdir(rails_path('db/migrate'))
+  FileUtils.mkdir(rails_path('db/migrate'))
 end
 
 # install our database migrations to the application
