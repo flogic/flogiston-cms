@@ -1,4 +1,5 @@
 class Admin::PagesController < ApplicationController
+  helper 'pages'
   layout 'admin'
 
   def index
