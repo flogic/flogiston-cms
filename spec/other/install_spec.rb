@@ -13,7 +13,8 @@ describe 'the plugin install.rb script' do
   before :each do
     FileUtils.stubs(:rm_rf)
     FileUtils.stubs(:mkdir)
-    FileUtils.stubs(:copy).with(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
+    FileUtils.stubs(:copy)
+    File.stubs(:directory?).returns(true)
     self.stubs(:system).returns(true)
     self.stubs(:puts).returns(true)
   end
@@ -22,70 +23,79 @@ describe 'the plugin install.rb script' do
     eval File.read(File.join(File.dirname(__FILE__), *%w[.. .. install.rb ]))
   end
 
-  describe '' do
-    # working around mocha's stupid jmock-style inability to stub and negative expect.
+  it "should remove the plugin's vendor/ directory" do
+    FileUtils.expects(:rm_rf).with(plugin_path('vendor'))
+    do_install
+  end
+
+  it "should remove the plugin's log/ directory" do
+    FileUtils.expects(:rm_rf).with(plugin_path('log'))
+    do_install
+  end
+
+  it "should remove the plugin's config/ directory" do
+    FileUtils.expects(:rm_rf).with(plugin_path('config'))
+    do_install
+  end
+
+  it "should remove the plugin's lib/tasks/ directory" do
+    FileUtils.expects(:rm_rf).with(plugin_path('lib/tasks'))
+    do_install
+  end
+
+  it "should remove the plugin's script/ directory" do
+    FileUtils.expects(:rm_rf).with(plugin_path('script'))
+    do_install
+  end
+
+  it "should remove the plugin's tmp/ directory" do
+    FileUtils.expects(:rm_rf).with(plugin_path('tmp'))
+    do_install
+  end
+
+  it 'should create a new config directory' do
+    FileUtils.expects(:mkdir).with(plugin_path('config'))
+    do_install
+  end
+
+  it 'should copy in the plugin routes file to the new config directory' do
+    FileUtils.expects(:copy).with(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
+    do_install
+  end
+
+  it 'should copy in the stylesheets to the public/ directory' do
+    Dir[File.join(plugin_path('public/stylesheets'), '*.css')].each do |sheet|
+      FileUtils.expects(:copy).with(sheet, rails_path('public/stylesheets'))
+    end
+    do_install
+  end
+
+  describe 'when a RAILS_ROOT/db/migrate directory does not exist' do
     before :each do
-      FileUtils.stubs(:copy)   # this is to work-around a mocha bug about stubs and negative expectations
+      File.stubs(:directory?).with(rails_path('db/migrate')).returns(false)
     end
 
-    it "should remove the plugin's vendor/ directory" do
-      FileUtils.expects(:rm_rf).with(plugin_path('vendor'))
+    it 'should create RAILS_ROOT/db/migrate when RAILS_ROOT/db exists' do
+      File.stubs(:directory?).with(rails_path('db')).returns(true)
+      FileUtils.expects(:mkdir).with(rails_path('db/migrate'))
       do_install
     end
 
-    it "should remove the plugin's log/ directory" do
-      FileUtils.expects(:rm_rf).with(plugin_path('log'))
-      do_install
-    end
-
-    it "should remove the plugin's config/ directory" do
-      FileUtils.expects(:rm_rf).with(plugin_path('config'))
-      do_install
-    end
-
-    it "should remove the plugin's lib/tasks/ directory" do
-      FileUtils.expects(:rm_rf).with(plugin_path('lib/tasks'))
-      do_install
-    end
-
-    it "should remove the plugin's script/ directory" do
-      FileUtils.expects(:rm_rf).with(plugin_path('script'))
-      do_install
-    end
-
-    it "should remove the plugin's tmp/ directory" do
-      FileUtils.expects(:rm_rf).with(plugin_path('tmp'))
-      do_install
-    end
-
-    it 'should create a new config directory' do
-      FileUtils.expects(:mkdir).with(plugin_path('config'))
-      do_install
-    end
-
-    it 'should copy in the plugin routes file to the new config directory' do
-      FileUtils.expects(:copy).with(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
+    it 'should not create RAILS_ROOT/db/migrate when RAILS_ROOT/db does not exist' do
+      File.stubs(:directory?).with(rails_path('db')).returns(false)
+      FileUtils.expects(:mkdir).with(rails_path('db/migrate')).never
       do_install
     end
 
     describe 'when a RAILS_ROOT/db/migrate directory does not exist' do
-      before :each do
-        File.stubs(:directory?).with(rails_path('db/migrate')).returns(false)
-      end
-      
-      it 'should create RAILS_ROOT/db/migrate when RAILS_ROOT/db exists' do
-        File.stubs(:directory?).with(rails_path('db')).returns(true)
-        FileUtils.expects(:mkdir).with(rails_path('db/migrate'))
-        do_install
-      end
-      
-      it 'should not create RAILS_ROOT/db/migrate when RAILS_ROOT/db does not exist' do
-        File.stubs(:directory?).with(rails_path('db')).returns(false)
-        FileUtils.expects(:mkdir).with(rails_path('db/migrate')).never
+      it "should not copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
+        Dir[File.join(plugin_path('db/migrate'), '*.rb')].each do |migration|
+          FileUtils.expects(:copy).with(migration, rails_path('db/migrate')).never
+        end
         do_install
       end
     end
-    
+
     describe 'when a RAILS_ROOT/db/migrate directory exists' do
       it "should copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
         File.stubs(:directory?).with(rails_path('db/migrate')).returns(true)
@@ -130,18 +140,6 @@ describe 'the plugin install.rb script' do
         IO.stubs(:read).with(plugin_path('README')).returns('README CONTENTS')
         readme_contents.should == 'README CONTENTS'
       end
-    end
-  end
-
-  # this is out here because of mocha.
-  describe 'when a RAILS_ROOT/db/migrate directory does not exist' do
-    it "should not copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
-      File.stubs(:directory?).with(rails_path('db/migrate')).returns(false)
-      File.stubs(:directory?).with(rails_path('db')).returns(false)
-      Dir[File.join(plugin_path('db/migrate'), '*.rb')].each do |migration|
-        FileUtils.expects(:copy).with(migration, rails_path('db/migrate')).never
-      end
-      do_install
     end
   end
 end

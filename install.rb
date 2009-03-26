@@ -29,6 +29,12 @@ if File.directory?(rails_path('db')) and ! File.directory?(rails_path('db/migrat
   FileUtils.mkdir(rails_path('db/migrate'))
 end
 
+# install our stylesheets to the application
+Dir[File.join(plugin_path('public/stylesheets'), '*.css')].each do |sheet|
+  puts "Installing plugin stylesheet #{sheet} to #{rails_path('public/stylesheets')}..."
+  FileUtils.copy(sheet, rails_path('public/stylesheets'))
+end
+
 # install our database migrations to the application
 if File.directory?(rails_path('db/migrate'))
   Dir[File.join(plugin_path('db/migrate'), '*.rb')].each do |migration|
