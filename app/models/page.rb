@@ -2,9 +2,13 @@ class Page < ActiveRecord::Base
   validates_uniqueness_of :handle
   
   def validate
-    unless self.class.valid_handle?(handle)
+    unless valid_handle?
       errors.add(:handle, "'#{handle}' is not allowed")
     end
+  end
+  
+  def valid_handle?
+    self.class.valid_handle?(handle)
   end
   
   class << self

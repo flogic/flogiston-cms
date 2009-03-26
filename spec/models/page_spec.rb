@@ -119,4 +119,22 @@ describe Page do
       end
     end
   end
+  
+  it 'should be able to check if its handle is valid' do
+    @page.should respond_to(:valid_handle?)
+  end
+  
+  describe 'checking if its handle is valid' do
+    it 'should delegate to the class, passing its own handle' do
+      @page.handle = 'handle'
+      Page.expects(:valid_handle?).with(@page.handle)
+      @page.valid_handle?
+    end
+    
+    it 'should return the result from the class method' do
+      result = 'some result'
+      Page.stubs(:valid_handle?).returns(result)
+      @page.valid_handle?.should == result
+    end
+  end
 end
