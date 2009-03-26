@@ -88,6 +88,17 @@ describe Page do
         ActionController::Routing::Routes.stubs(:recognize_path).raises(ActionController::RoutingError.new('No route matches'))
         Page.valid_handle?(@handle).should be(true)
       end
+      
+      it 'should prepend a / to the given handle if needed' do
+        handle = 'something'
+        ActionController::Routing::Routes.expects(:recognize_path).with("/#{handle}").returns({})
+        Page.valid_handle?(handle)
+      end
+      
+      it 'should handle a nil handle' do
+        ActionController::Routing::Routes.expects(:recognize_path).with('/').returns({})
+        Page.valid_handle?(nil)
+      end
     end
   end
 end
