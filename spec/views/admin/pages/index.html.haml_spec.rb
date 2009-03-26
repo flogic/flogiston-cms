@@ -45,6 +45,23 @@ describe 'admin/pages/index' do
       end
     end
     
+    it 'should get a marker for the possibly-invalid page handle' do
+      template.expects(:show_invalid_handle).with(@page)
+      do_render
+    end
+    
+    it 'should include the possible invalid page handle marker' do
+      marker = 'bad page marker'
+      template.stubs(:show_invalid_handle).returns(marker)
+      
+      do_render
+      response.should have_tag('table[id=?]', 'pages') do
+        with_tag('tbody') do
+          with_tag('tr', Regexp.new(Regexp.escape(marker)))
+        end
+      end
+    end
+    
     it 'should include an edit link' do
       do_render
       response.should have_tag('table[id=?]', 'pages') do

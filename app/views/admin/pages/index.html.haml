@@ -7,7 +7,9 @@
   %tbody
     - @pages.each do |page|
       %tr.body
-        %td= link_to(page.path, page.path, { :target => '_blank' })
+        %td
+          = link_to(page.path, page.path, { :target => '_blank' }) 
+          = show_invalid_handle(page)
         %td= page.title
         %td.actions 
           = link_to 'edit', edit_admin_page_path(page)
