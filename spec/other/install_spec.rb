@@ -64,9 +64,7 @@ describe 'the plugin install.rb script' do
   end
 
   it 'should copy in the stylesheets to the public/ directory' do
-    Dir[File.join(plugin_path('public/stylesheets'), '*.css')].each do |sheet|
-      FileUtils.expects(:copy).with(sheet, rails_path('public/stylesheets'))
-    end
+      FileUtils.expects(:copy).with(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
     do_install
   end
 

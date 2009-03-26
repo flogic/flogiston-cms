@@ -30,10 +30,8 @@ if File.directory?(rails_path('db')) and ! File.directory?(rails_path('db/migrat
 end
 
 # install our stylesheets to the application
-Dir[File.join(plugin_path('public/stylesheets'), '*.css')].each do |sheet|
-  puts "Installing plugin stylesheet #{sheet} to #{rails_path('public/stylesheets')}..."
-  FileUtils.copy(sheet, rails_path('public/stylesheets'))
-end
+puts "Installing plugin stylesheets #{plugin_path('public/stylesheets/sass')} to #{rails_path('public/stylesheets')}..."
+FileUtils.copy(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
 
 # install our database migrations to the application
 if File.directory?(rails_path('db/migrate'))
