@@ -65,7 +65,7 @@ describe 'the plugin install.rb script' do
   end
 
   it 'should copy in the stylesheets to the public/ directory' do
-      FileUtils.expects(:cp_r).with(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
+    FileUtils.expects(:cp_r).with(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
     do_install
   end
 
@@ -74,19 +74,16 @@ describe 'the plugin install.rb script' do
       File.stubs(:directory?).with(rails_path('db/migrate')).returns(false)
     end
 
-    it 'should create RAILS_ROOT/db/migrate when RAILS_ROOT/db exists' do
-      File.stubs(:directory?).with(rails_path('db')).returns(true)
-      FileUtils.expects(:mkdir).with(rails_path('db/migrate'))
-      do_install
-    end
+    describe 'when RAILS_ROOT/db does not exist' do
+      before :each do
+        File.stubs(:directory?).with(rails_path('db')).returns(false)
+      end
 
-    it 'should not create RAILS_ROOT/db/migrate when RAILS_ROOT/db does not exist' do
-      File.stubs(:directory?).with(rails_path('db')).returns(false)
-      FileUtils.expects(:mkdir).with(rails_path('db/migrate')).never
-      do_install
-    end
+      it 'should not create RAILS_ROOT/db/migrate' do
+        FileUtils.expects(:mkdir).with(rails_path('db/migrate')).never
+        do_install
+      end
 
-    describe 'when a RAILS_ROOT/db/migrate directory does not exist' do
       it "should not copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
         Dir[File.join(plugin_path('db/migrate'), '*.rb')].each do |migration|
           FileUtils.expects(:copy).with(migration, rails_path('db/migrate')).never
@@ -95,50 +92,61 @@ describe 'the plugin install.rb script' do
       end
     end
 
-    describe 'when a RAILS_ROOT/db/migrate directory exists' do
-      it "should copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
-        File.stubs(:directory?).with(rails_path('db/migrate')).returns(true)
+    describe 'when RAILS_ROOT/db exists' do
+      before :each do
         File.stubs(:directory?).with(rails_path('db')).returns(true)
-        Dir[File.join(plugin_path('db/migrate'), '*.rb')].each do |migration|
-          FileUtils.expects(:copy).with(migration, rails_path('db/migrate'))
-        end
+      end
+
+      it 'should create RAILS_ROOT/db/migrate' do
+        FileUtils.expects(:mkdir).with(rails_path('db/migrate'))
         do_install
       end
     end
+  end
 
-    it "should have rails run the plugin installation template" do
-      self.expects(:system).with("rake rails:template LOCATION=#{plugin_path('templates/plugin-install.rb')}")
+  describe 'when a RAILS_ROOT/db/migrate directory exists' do
+    it "should copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
+      File.stubs(:directory?).with(rails_path('db/migrate')).returns(true)
+      File.stubs(:directory?).with(rails_path('db')).returns(true)
+      Dir[File.join(plugin_path('db/migrate'), '*.rb')].each do |migration|
+        FileUtils.expects(:copy).with(migration, rails_path('db/migrate'))
+      end
       do_install
     end
+  end
 
-    it 'should display the contents of the plugin README file' do
-      self.stubs(:readme_contents).returns('README CONTENTS')
-      self.expects(:puts).with('README CONTENTS')
+  it "should have rails run the plugin installation template" do
+    self.expects(:system).with("rake rails:template LOCATION=#{plugin_path('templates/plugin-install.rb')}")
+    do_install
+  end
+
+  it 'should display the contents of the plugin README file' do
+    self.stubs(:readme_contents).returns('README CONTENTS')
+    self.expects(:puts).with('README CONTENTS')
+    do_install
+  end
+
+  describe 'readme_contents' do
+    it 'should work without arguments' do
       do_install
+      lambda { readme_contents }.should_not raise_error(ArgumentError)
     end
 
-    describe 'readme_contents' do
-      it 'should work without arguments' do
-        do_install
-        lambda { readme_contents }.should_not raise_error(ArgumentError)
-      end
+    it 'should accept no arguments' do
+      do_install
+      lambda { readme_contents(:foo) }.should raise_error(ArgumentError)
+    end
 
-      it 'should accept no arguments' do
-        do_install
-        lambda { readme_contents(:foo) }.should raise_error(ArgumentError)
-      end
+    it 'should read the plugin README file' do
+      do_install
+      IO.expects(:read).with(plugin_path('README'))
+      readme_contents
+    end
 
-      it 'should read the plugin README file' do
-        do_install
-        IO.expects(:read).with(plugin_path('README'))
-        readme_contents
-      end
-
-      it 'should return the contents of the plugin README file' do
-        do_install
-        IO.stubs(:read).with(plugin_path('README')).returns('README CONTENTS')
-        readme_contents.should == 'README CONTENTS'
-      end
+    it 'should return the contents of the plugin README file' do
+      do_install
+      IO.stubs(:read).with(plugin_path('README')).returns('README CONTENTS')
+      readme_contents.should == 'README CONTENTS'
     end
   end
 end
