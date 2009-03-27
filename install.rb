@@ -25,6 +25,21 @@ FileUtils.mkdir(plugin_path('config'))
 puts "Copying in plugin-specific routes to config/routes.rb..."
 FileUtils.copy(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
 
+unless File.directory?(rails_path('config'))
+  FileUtils.mkdir(rails_path('config'))
+end
+
+if File.file?(rails_path('config/routes.rb'))
+  puts "Appending plugin-specific routes to #{rails_path('config/routes.rb')}..."
+  File.open(rails_path('config/routes.rb'), 'a') do |f|
+    f.puts
+    f.puts File.read(plugin_path('lib/plugin-bottom-routes.rb'))
+  end
+else
+  puts "Copying in plugin-specific routes to #{rails_path('config/routes.rb')}..."
+  FileUtils.copy(plugin_path('lib/plugin-bottom-routes.rb'), rails_path('config/routes.rb'))
+end
+
 if File.directory?(rails_path('db')) and ! File.directory?(rails_path('db/migrate'))
   FileUtils.mkdir(rails_path('db/migrate'))
 end

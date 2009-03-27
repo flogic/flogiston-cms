@@ -63,6 +63,78 @@ describe 'the plugin install.rb script' do
     FileUtils.expects(:copy).with(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
     do_install
   end
+  
+  describe 'when a RAILS_ROOT/config directory does not exist' do  # it could maybe happen?
+    before :each do
+      File.stubs(:directory?).with(rails_path('config')).returns(false)
+    end
+    
+    it 'should create the RAILS_ROOT/config directory' do
+      FileUtils.expects(:mkdir).with(rails_path('config'))
+      do_install
+    end
+    
+    it 'should copy the plugin bottom-routes to the RAILS_ROOT/config/routes.rb file' do
+      FileUtils.expects(:copy).with(plugin_path('lib/plugin-bottom-routes.rb'), rails_path('config/routes.rb'))
+      do_install
+    end
+  end
+  
+  describe 'when a RAILS_ROOT/config directory exists' do
+    before :each do
+      File.stubs(:directory?).with(rails_path('config')).returns(true)
+    end
+    
+    it 'should not attempt to create the RAILS_ROOT/config directory' do
+      FileUtils.expects(:mkdir).with(rails_path('config')).never
+      do_install
+    end
+    
+    describe 'and the routes file exists' do
+      before :each do
+        @install_rb = File.read(File.join(File.dirname(__FILE__), *%w[.. .. install.rb ]))
+        
+        File.stubs(:file?).with(rails_path('config/routes.rb')).returns(true)
+        @file = stub('file', :puts => nil)
+        File.stubs(:open).yields(@file)
+        @routes = 'routes'
+        File.stubs(:read).returns(@routes)
+      end
+      
+      # This different do_install method and the @install_rb instance variable
+      # are to keep File stubbing/mocking the read method from wreaking havoc
+      # with the File.read call in the do_install method above.
+      def do_install
+        eval @install_rb
+      end
+      
+      it 'should open the routes file for appending' do
+        File.expects(:open).with(rails_path('config/routes.rb'), 'a').yields(@file)
+        do_install
+      end
+      
+      it 'should read the contents of the plugin bottom-routes file' do
+        File.expects(:read).with(plugin_path('lib/plugin-bottom-routes.rb')).returns(@routes)
+        do_install
+      end
+      
+      it 'should put the plugin bottom-routes in the main routes file' do
+        @file.expects(:puts).with(@routes)
+        do_install
+      end
+    end
+    
+    describe 'and the routes file does not exist' do
+      before :each do
+        File.stubs(:file?).with(rails_path('config/routes.rb')).returns(false)
+      end
+      
+      it 'should copy the plugin bottom-routes to the RAILS_ROOT/config/routes.rb file' do
+        FileUtils.expects(:copy).with(plugin_path('lib/plugin-bottom-routes.rb'), rails_path('config/routes.rb'))
+        do_install
+      end
+    end
+  end
 
   it 'should copy in the stylesheets to the public/ directory' do
     FileUtils.expects(:cp_r).with(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
