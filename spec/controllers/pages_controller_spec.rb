@@ -97,6 +97,22 @@ describe PagesController do
         do_get
         response.layout.should == 'layouts/application'
       end
+      
+      describe 'and points to a nested page' do
+        before :each do
+          @handle = 'this/is/some/nested/handle'
+          @page = Page.generate!(:handle => @handle, :title => 'test title')
+        end
+        
+        def do_get
+          get :show, :path => @handle.split('/')
+        end
+        
+        it 'should look up the page by joining the path parts' do
+          Page.expects(:find_by_handle!).with(@handle).returns(@page)
+          do_get
+        end
+      end
     end
 
     describe 'which does not match a page handle' do
@@ -109,7 +125,7 @@ describe PagesController do
       end
     end
 
-    describe 'and the handle is empty' do
+    describe 'and the path is empty' do
       before :each do
         @page = Page.generate!(:handle => '', :title => 'test title')
       end

@@ -3,7 +3,7 @@ class PagesController < ApplicationController
     if params[:id]
       @page = Page.find(params[:id])
     elsif params[:path] 
-      @page = Page.find_by_handle!(params[:path].first || '')
+      @page = Page.find_by_handle!(params[:path].join('/'))
     else
       raise ActiveRecord::RecordNotFound
     end
