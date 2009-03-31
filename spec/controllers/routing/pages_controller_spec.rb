@@ -44,7 +44,7 @@ describe PagesController, "#params_from" do
     params_from(:get, "/pages/1").should == {:controller => "pages", :action => "show", :id => "1"}
   end
   
-  it "should generate params { :controller => 'pages', action => 'edit', id => '1' } from GET /pages/1;edit" do
+  it "should generate params { :controller => 'pages', action => 'edit', id => '1' } from GET /pages/1/edit" do
     params_from(:get, "/pages/1/edit").should == {:controller => "pages", :action => "edit", :id => "1"}
   end
   
@@ -56,7 +56,11 @@ describe PagesController, "#params_from" do
     params_from(:delete, "/pages/1").should == {:controller => "pages", :action => "destroy", :id => "1"}
   end
     
-  it "should generate params { :controller => 'pages', action => 'show', path => '1' } from GET /nonsensecontroller" do
+  it "should generate params { :controller => 'pages', action => 'show', path => ['nonsensecontroller'] } from GET /nonsensecontroller" do
     params_from(:get, "/nonsensecontroller").should == {:controller => "pages", :action => "show", :path => ["nonsensecontroller"] }
+  end
+  
+  it "should generate params { :controller => 'pages', action => 'show', path => ['some', 'path', 'here'] } from GET /some/path/here" do
+    params_from(:get, "/some/path/here").should == {:controller => "pages", :action => "show", :path => ['some', 'path', 'here'] }
   end
 end
