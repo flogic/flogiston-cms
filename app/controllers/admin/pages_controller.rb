@@ -1,6 +1,5 @@
-class Admin::PagesController < ApplicationController
+class Admin::PagesController < AdminController
   helper 'pages'
-  layout 'admin'
 
   def index
     @pages = Page.all.sort_by(&:handle)
