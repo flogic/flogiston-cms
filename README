@@ -1,5 +1,10 @@
-Flogiston
-=========
+Flogiston-cms
+=============
+
+
+
+
+
 
 REQUIREMENTS:
 
@@ -10,12 +15,12 @@ INSTALLATION:
 
    Installation as a stand-alone application:
 
-   % git clone git://github.com/flogic/flogiston.git
+   % git clone git://github.com/flogic/flogiston-cms.git
 
 
    Installation as a plugin in a Rails application:
 
-   % script/plugin install git://github.com/flogic/flogiston.git
+   % script/plugin install git://github.com/flogic/flogiston-cms.git
 
 
 POST-INSTALLATION:
