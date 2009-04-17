@@ -209,15 +209,15 @@ describe 'the plugin install.rb script' do
       lambda { readme_contents(:foo) }.should raise_error(ArgumentError)
     end
 
-    it 'should read the plugin README file' do
+    it 'should read the plugin README.markdown file' do
       do_install
-      IO.expects(:read).with(plugin_path('README'))
+      IO.expects(:read).with(plugin_path('README.markdown'))
       readme_contents
     end
 
-    it 'should return the contents of the plugin README file' do
+    it 'should return the contents of the plugin README.markdown file' do
       do_install
-      IO.stubs(:read).with(plugin_path('README')).returns('README CONTENTS')
+      IO.stubs(:read).with(plugin_path('README.markdown')).returns('README CONTENTS')
       readme_contents.should == 'README CONTENTS'
     end
   end

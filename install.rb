@@ -9,7 +9,7 @@ def rails_path(relative)
 end
 
 def readme_contents
-  IO.read(plugin_path('README'))
+  IO.read(plugin_path('README.markdown'))
 end
 
 
