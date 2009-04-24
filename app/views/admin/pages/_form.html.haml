@@ -1,4 +1,4 @@
-- form_for [:admin, page] do |f|
+- form_for [:admin, page], :html => { :class => 'flogiston-cms' } do |f|
   %input{ :type => 'hidden', :name => 'preview' }/
   .guide
     = link_to 'markdown syntax guide', 'http://daringfireball.net/projects/markdown/syntax', :target => '_blank'
