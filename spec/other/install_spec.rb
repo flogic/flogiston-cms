@@ -137,7 +137,7 @@ describe 'the plugin install.rb script' do
   end
 
   it 'should copy in the stylesheets to the public/ directory' do
-    FileUtils.expects(:cp_r).with(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets/sass'))
+    FileUtils.expects(:cp_r).with(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
     do_install
   end
 
