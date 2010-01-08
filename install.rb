@@ -12,9 +12,7 @@ def readme_contents
   IO.read(plugin_path('README.markdown'))
 end
 
-puts "Copying in plugin-specific routes to config/routes.rb..."
-FileUtils.copy(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
-
+puts "Copying in plugin-specific routes..."
 unless File.directory?(rails_path('config'))
   FileUtils.mkdir(rails_path('config'))
 end
