@@ -11,7 +11,6 @@ end
 
 describe 'the plugin install.rb script' do
   before :each do
-    FileUtils.stubs(:rm_rf)
     FileUtils.stubs(:mkdir)
     FileUtils.stubs(:copy)
     FileUtils.stubs(:cp_r)
@@ -22,46 +21,6 @@ describe 'the plugin install.rb script' do
 
   def do_install
     eval File.read(File.join(File.dirname(__FILE__), *%w[.. .. install.rb ]))
-  end
-
-  it "should remove the plugin's vendor/ directory" do
-    FileUtils.expects(:rm_rf).with(plugin_path('vendor'))
-    do_install
-  end
-
-  it "should remove the plugin's log/ directory" do
-    FileUtils.expects(:rm_rf).with(plugin_path('log'))
-    do_install
-  end
-
-  it "should remove the plugin's config/ directory" do
-    FileUtils.expects(:rm_rf).with(plugin_path('config'))
-    do_install
-  end
-
-  it "should remove the plugin's lib/tasks/ directory" do
-    FileUtils.expects(:rm_rf).with(plugin_path('lib/tasks'))
-    do_install
-  end
-
-  it "should remove the plugin's script/ directory" do
-    FileUtils.expects(:rm_rf).with(plugin_path('script'))
-    do_install
-  end
-
-  it "should remove the plugin's tmp/ directory" do
-    FileUtils.expects(:rm_rf).with(plugin_path('tmp'))
-    do_install
-  end
-
-  it 'should create a new config directory' do
-    FileUtils.expects(:mkdir).with(plugin_path('config'))
-    do_install
-  end
-
-  it 'should copy in the plugin routes file to the new config directory' do
-    FileUtils.expects(:copy).with(plugin_path('lib/plugin-routes.rb'), plugin_path('config/routes.rb'))
-    do_install
   end
   
   describe 'when a RAILS_ROOT/config directory does not exist' do  # it could maybe happen?
@@ -135,58 +94,12 @@ describe 'the plugin install.rb script' do
       end
     end
   end
-
-  it 'should copy in the stylesheets to the public/ directory' do
-    FileUtils.expects(:cp_r).with(plugin_path('public/stylesheets/sass'), rails_path('public/stylesheets'))
+  
+  it "should copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
+    FileUtils.expects(:cp_r).with(plugin_path('db/migrate'), rails_path('db'))
     do_install
   end
-
-  describe 'when a RAILS_ROOT/db/migrate directory does not exist' do
-    before :each do
-      File.stubs(:directory?).with(rails_path('db/migrate')).returns(false)
-    end
-
-    describe 'when RAILS_ROOT/db does not exist' do
-      before :each do
-        File.stubs(:directory?).with(rails_path('db')).returns(false)
-      end
-
-      it 'should not create RAILS_ROOT/db/migrate' do
-        FileUtils.expects(:mkdir).with(rails_path('db/migrate')).never
-        do_install
-      end
-
-      it "should not copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
-        Dir[File.join(plugin_path('db/migrate'), '*.rb')].each do |migration|
-          FileUtils.expects(:copy).with(migration, rails_path('db/migrate')).never
-        end
-        do_install
-      end
-    end
-
-    describe 'when RAILS_ROOT/db exists' do
-      before :each do
-        File.stubs(:directory?).with(rails_path('db')).returns(true)
-      end
-
-      it 'should create RAILS_ROOT/db/migrate' do
-        FileUtils.expects(:mkdir).with(rails_path('db/migrate'))
-        do_install
-      end
-    end
-  end
-
-  describe 'when a RAILS_ROOT/db/migrate directory exists' do
-    it "should copy the plugin's db migrations to the RAILS_ROOT db/migrate directory" do
-      File.stubs(:directory?).with(rails_path('db/migrate')).returns(true)
-      File.stubs(:directory?).with(rails_path('db')).returns(true)
-      Dir[File.join(plugin_path('db/migrate'), '*.rb')].each do |migration|
-        FileUtils.expects(:copy).with(migration, rails_path('db/migrate'))
-      end
-      do_install
-    end
-  end
-
+  
   it "should have rails run the plugin installation template" do
     self.expects(:system).with("rake rails:template LOCATION=#{plugin_path('templates/plugin-install.rb')}")
     do_install
