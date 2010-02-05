@@ -26,7 +26,7 @@ describe Page do
       @page.reload.handle.should == 'test_handle'
     end
 
-    it 'should have a contents' do
+    it 'should have contents' do
       @page.should respond_to(:contents)
     end
 
