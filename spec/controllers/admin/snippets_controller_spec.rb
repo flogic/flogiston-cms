@@ -76,13 +76,43 @@ describe Admin::SnippetsController do
   end
 
   describe 'show' do
+    before :each do
+      @snippet = Snippet.generate!
+      @id = @snippet.id.to_s
+    end
+    
     def do_get
       get :show, :id => @id
     end
-
-    it 'should redirect to the snippets admin index' do
+    
+    it 'should be successful' do
       do_get
-      response.should redirect_to(admin_snippets_path)
+      response.should be_success
+    end
+
+    it 'should find the requested snippet' do
+      Snippet.expects(:find).with(@id).returns(@snippet)
+      do_get
+    end
+    
+    it 'should make the requested snippet available to the view' do
+      do_get
+      assigns[:snippet].should == @snippet
+    end
+    
+    it 'should render the show template' do
+      do_get
+      response.should render_template('admin/snippets/show')
+    end
+    
+    it 'should use the admin layout' do
+      do_get
+      response.layout.should == 'layouts/admin'
+    end
+    
+    it 'should set the snippet title' do
+      do_get
+      assigns[:title].should_not be_blank
     end
   end
 

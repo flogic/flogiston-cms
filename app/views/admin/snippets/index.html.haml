@@ -1,0 +1,13 @@
+%table#snippets.admin
+  %thead
+    %tr.header
+      %th handle
+      %th actions
+  %tbody
+    - @snippets.each do |snippet|
+      %tr.body
+        %td
+          = link_to(snippet.handle, admin_snippet_path(snippet), { :target => '_blank' }) 
+        %td.actions 
+          = link_to 'edit', edit_admin_snippet_path(snippet)
+          = link_to 'delete', admin_snippet_path(snippet), :confirm => 'Are you sure?', :method => :delete

@@ -7,7 +7,8 @@ class Admin::SnippetsController < AdminController
   end
 
   def show
-    redirect_to(admin_snippets_path)
+    @snippet = Snippet.find(params[:id])
+    @title = "Viewing snippet '#{@snippet.handle}'"
   end
 
   def new
@@ -28,7 +29,7 @@ class Admin::SnippetsController < AdminController
 
   def edit
     @snippet = Snippet.find(params[:id])
-    @title = "Editing snippet '#{@snippet.title}'"
+    @title = "Editing snippet '#{@snippet.handle}'"
   end
 
   def update
@@ -38,7 +39,7 @@ class Admin::SnippetsController < AdminController
     if !preview? and @snippet.save
       redirect_to(admin_snippet_path(@snippet))
     else
-      @title = "Editing snippet '#{@snippet.title}'"
+      @title = "Editing snippet '#{@snippet.handle}'"
       render :action => 'edit'
     end
   end

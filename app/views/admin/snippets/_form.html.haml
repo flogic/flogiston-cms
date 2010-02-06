@@ -1,0 +1,22 @@
+- form_for [:admin, snippet], :html => { :class => 'flogiston-cms' } do |f|
+  %input{ :type => 'hidden', :name => 'preview' }/
+  .guide
+    = link_to 'markdown syntax guide', 'http://daringfireball.net/projects/markdown/syntax', :target => '_blank'
+  - unless f.error_messages.blank?
+    .errors= f.error_messages
+  .field
+    %label{:for => 'snippet_handle'}
+      Handle:
+    = f.text_field(:handle)
+  .field
+    %label{:for => 'snippet_contents'}
+      Contents:
+    = f.text_area :contents
+  .submit.preview
+    = f.submit 'Preview', :onclick => "this.form['preview'].value = true"
+  .submit
+    = f.submit 'Submit'
+
+- unless snippet.contents.blank?
+  #preview
+    = render :partial => 'pages/show', :locals => { :page => snippet }
