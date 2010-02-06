@@ -1,3 +1,3 @@
-class Snippet < Page
-  def valid_handle?() true; end
+class Snippet < AbstractPage
+  validates_uniqueness_of :handle
 end

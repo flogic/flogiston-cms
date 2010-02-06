@@ -118,6 +118,17 @@ describe Page do
         Page.valid_handle?(nil)
       end
     end
+  
+    it 'should not include snippets when finding' do
+      Page.delete_all
+      Snippet.delete_all
+      
+      # OD doesn't look for exemplars in plugins
+      Page.generate!(:handle => 'page')
+      Snippet.generate!(:handle => 'snippet')
+      
+      Page.count.should == 1
+    end
   end
   
   it 'should be able to check if its handle is valid' do

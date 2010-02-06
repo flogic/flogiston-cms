@@ -1,4 +1,4 @@
-class Page < ActiveRecord::Base
+class Page < AbstractPage
   validates_uniqueness_of :handle
   
   def validate
