@@ -24,4 +24,12 @@ class Page < AbstractPage
   def path
     "/#{handle}"
   end
+  
+  def full_contents
+    contents.gsub(/\{\{\s*\w+\s*\}\}/) do |pattern|
+      handle = pattern.match(/\w+/)[0]
+      snippet = Snippet.find_by_handle(handle)
+      snippet ? snippet.contents : ''
+    end
+  end
 end
