@@ -135,15 +135,27 @@ describe 'admin/pages/edit' do
       do_render
       response.should have_tag('div[id=?]', 'preview')
     end
-
-
+    
     it 'should include the page contents formatted with markdown' do
       do_render
       response.should have_tag('div[id=?]', 'preview') do
         with_tag('li', :text => /whatever/)
       end
     end
-
+    
+    it 'should include referenced snippets' do
+      Snippet.generate!(:handle => 'testsnip', :contents => "
+ 1. something
+ 1. nothing
+      ")
+      @page.contents += "\n{{ testsnip }}\n"
+ 
+      do_render
+      response.should have_tag('div[id=?]', 'preview') do
+        with_tag('li', :text => /something/)
+      end
+    end
+    
     it 'should not exist if the page contents are the empty string' do
       @page.contents = ''
       do_render

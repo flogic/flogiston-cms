@@ -22,4 +22,15 @@ describe 'pages/show' do
     do_render
     response.should have_tag('li', :text => /whatever/)
   end
+  
+  it 'should include referenced snippets' do
+    Snippet.generate!(:handle => 'testsnip', :contents => "
+ 1. something
+ 1. nothing
+    ")
+    @page.contents += "\n{{ testsnip }}\n"
+ 
+    do_render
+    response.should have_tag('li', :text => /something/)
+  end
 end
