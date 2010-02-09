@@ -40,4 +40,25 @@ describe Snippet do
       Snippet.generate(:handle => handle)
     end
   end
+
+  it 'should have full contents' do
+    @snippet.should respond_to(:full_contents)
+  end
+  
+  describe 'full contents' do
+    it 'should be the snippet contents in simple cases' do
+      contents = 'abba dabba'
+      @snippet.contents = contents
+      @snippet.full_contents.should == contents
+    end
+    
+    it 'should not process any referenced snippet' do
+      snippet_handle = 'testsnip'
+      snippet_contents = 'blah blah blah'
+      Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
+      
+      @snippet = Snippet.generate!(:contents => "big bag boom {{ #{snippet_handle} }} badaboom")
+      @snippet.full_contents.should == "big bag boom {{ #{snippet_handle} }} badaboom"
+    end
+  end
 end
