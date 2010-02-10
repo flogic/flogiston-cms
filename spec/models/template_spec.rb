@@ -147,4 +147,66 @@ describe Template do
       end      
     end
   end
+  
+  describe 'to support pretending to be an ActionView Layout' do
+    it 'should have a path without format and extension' do
+      @template.should respond_to(:path_without_format_and_extension)
+    end
+    
+    describe 'path_without_format_and_extension' do
+      it 'should just be the empty string' do
+        @template.path_without_format_and_extension.should == ''
+      end
+    end
+    
+    it 'should render_template' do
+      @template.should respond_to(:render_template)
+    end
+    
+    describe 'render_template' do
+      before :each do
+        @template.contents = 'contents go here, yes?'
+        
+        @view_obj = ActionView::Base.new
+        ActionView::Base.stubs(:new).returns(@view_obj)
+        
+        @view = 'some view'
+        @locals = { :this => :that, :other => :thing }
+      end
+      
+      it 'should accept a view and local assigns' do
+        lambda { @template.render_template(@view, @locals) }.should_not raise_error(ArgumentError)
+      end
+      
+      it 'should accept just a view' do
+        lambda { @template.render_template(@view) }.should_not raise_error(ArgumentError)
+      end
+      
+      it 'should require a view' do
+        lambda { @template.render_template }.should raise_error(ArgumentError)
+      end
+      
+      it 'should initialize an ActionView::Base object' do
+        ActionView::Base.expects(:new).returns(@view_obj)
+        @template.render_template(@view, @locals)
+      end
+      
+      it 'should make the ActionView::Base object render the template contents, using the local assigns' do
+        @view_obj.expects(:render).with({ :inline => @template.contents }, @locals)
+        @template.render_template(@view, @locals)
+      end
+      
+      it 'should return the result of the rendering' do
+        @results = 'dumb results'
+        @view_obj.stubs(:render).returns(@results)
+        
+        @template.render_template(@view, @locals).should == @results
+      end
+      
+      it 'should default the local assigns to the empty hash' do
+        @view_obj.expects(:render).with({ :inline => @template.contents }, {})
+        @template.render_template(@view)
+      end
+    end
+  end
 end
