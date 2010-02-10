@@ -41,7 +41,11 @@ describe PagesController do
 
         it 'should use the default layout' do
           do_get
-          response.layout.should == 'layouts/application'
+          if Dir[File.join(RAILS_ROOT, 'app', 'views', 'layouts', 'application') + '*'].empty?
+            response.layout.should be_nil
+          else
+            response.layout.should == 'layouts/application'
+          end
         end
       end
 
@@ -95,7 +99,11 @@ describe PagesController do
 
       it 'should use the default layout' do
         do_get
-        response.layout.should == 'layouts/application'
+        if Dir[File.join(RAILS_ROOT, 'app', 'views', 'layouts', 'application') + '*'].empty?
+          response.layout.should be_nil
+        else
+          response.layout.should == 'layouts/application'
+        end
       end
       
       describe 'and points to a nested page' do
@@ -161,7 +169,11 @@ describe PagesController do
 
       it 'should use the default layout' do
         do_get
-        response.layout.should == 'layouts/application'
+        if Dir[File.join(RAILS_ROOT, 'app', 'views', 'layouts', 'application') + '*'].empty?
+          response.layout.should be_nil
+        else
+          response.layout.should == 'layouts/application'
+        end
       end
     end
   end
