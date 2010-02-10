@@ -13,5 +13,9 @@ describe AdminHelper do
     it 'should include snippets' do
       helper.admin_sections.should include('snippets')
     end
+    
+    it 'should include templates' do
+      helper.admin_sections.should include('templates')
+    end
   end
 end
