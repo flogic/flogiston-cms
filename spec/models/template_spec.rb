@@ -174,11 +174,15 @@ describe Template do
     describe 'render_template' do
       before :each do
         @template.contents = 'contents go here, yes?'
+        @template_full_contents = 'full contents'
+        @template.stubs(:full_contents).returns(@template_full_contents)
         
         @view_obj = ActionView::Base.new
         ActionView::Base.stubs(:new).returns(@view_obj)
         
         @view = 'some view'
+        @view_contents = 'some view contents'
+        @view.instance_variable_set('@content_for_layout', @view_contents)
         @locals = { :this => :that, :other => :thing }
       end
       
@@ -199,20 +203,25 @@ describe Template do
         @template.render_template(@view, @locals)
       end
       
-      it 'should make the ActionView::Base object render the template contents, using the local assigns' do
-        @view_obj.expects(:render).with({ :inline => @template.contents }, @locals)
+      it "should get the template full contents, using the view contents as a replacement for 'content'" do
+        @template.expects(:full_contents).with(:contents => @view_contents).returns(@template_full_contents)
+        @template.render_template(@view, @locals)
+      end
+      
+      it 'should make the ActionView::Base object render the template full contents, using the local assigns' do
+        @view_obj.expects(:render).with({ :inline => @template_full_contents }, @locals)
         @template.render_template(@view, @locals)
       end
       
       it 'should return the result of the rendering' do
-        @results = 'dumb results'
+        @results = 'render results'
         @view_obj.stubs(:render).returns(@results)
         
         @template.render_template(@view, @locals).should == @results
       end
       
       it 'should default the local assigns to the empty hash' do
-        @view_obj.expects(:render).with({ :inline => @template.contents }, {})
+        @view_obj.expects(:render).with({ :inline => @template_full_contents }, {})
         @template.render_template(@view)
       end
     end
