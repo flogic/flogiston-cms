@@ -106,7 +106,7 @@ describe 'admin/templates/edit' do
   describe 'preview area' do
     before :each do
         @template_obj.contents = "
- * whatever
+ * whate<ve>r
  * whatever else
 "
     end
@@ -115,13 +115,14 @@ describe 'admin/templates/edit' do
       do_render
       response.should have_tag('div[id=?]', 'preview')
     end
-
-
-    it 'should include the template contents without formatting' do
+    
+    it 'should include the template contents without formatting, with entities escaped, and in a pre block' do
       do_render
-      response.should have_tag('div[id=?]', 'preview', :text => /\* whatever/)
+      response.should have_tag('div[id=?]', 'preview') do
+        with_tag('pre', :text => /\* whate&lt;ve&gt;r/)
+      end
     end
-
+    
     it 'should not exist if the template contents are the empty string' do
       @template_obj.contents = ''
       do_render

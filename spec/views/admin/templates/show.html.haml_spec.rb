@@ -19,13 +19,13 @@ describe 'admin/templates/show' do
     do_render
     response.should have_text(Regexp.new(Regexp.escape(@template_obj.contents)))
   end
-
-  it 'should not format the template contents' do
+  
+  it 'should include the template contents without formatting, with entities escaped, and in a pre block' do
     @template_obj.contents = "
- * whatever
+ * whate<ve>r
  * whatever else
 "
     do_render
-    response.should have_text(/\* whatever/)
+    response.should have_tag('pre', :text => /\* whate&lt;ve&gt;r/)
   end
 end
