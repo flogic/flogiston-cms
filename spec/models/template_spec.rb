@@ -162,8 +162,16 @@ describe Template do
     end
     
     describe 'path_without_format_and_extension' do
-      it 'should just be the empty string' do
-        @template.path_without_format_and_extension.should == ''
+      before :each do
+        @template.handle = 'some_template'
+      end
+      
+      it 'should indicate this is a Template object' do
+        @template.path_without_format_and_extension.should include('Template')
+      end
+      
+      it 'should include the handle' do
+        @template.path_without_format_and_extension.should include(@template.handle)
       end
     end
     

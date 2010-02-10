@@ -8,7 +8,9 @@ class Template < AbstractPage
   end
   
   ### for ActionView Layout fakery
-  def path_without_format_and_extension() ''; end
+  def path_without_format_and_extension
+    "<Template '#{handle}'>"
+  end
   
   def render_template(view, local_assigns = {})
     view_contents = view.instance_variable_get('@content_for_layout')
