@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. .. .. spec_hel
 
 describe 'admin/templates/new' do
   before :each do
-    assigns[:template] = @template = Template.new
+    assigns[:template_obj] = @template_obj = Template.new
   end
 
   def do_render
@@ -71,7 +71,7 @@ describe 'admin/templates/new' do
 
     describe 'when errors are available' do
       it 'should display errors in an error region' do
-        @template.errors.add_to_base("error on this template")
+        @template_obj.errors.add_to_base("error on this template")
         do_render
         response.should have_tag('div[class=?]', 'errors', :text => /error on this template/)
       end
@@ -87,7 +87,7 @@ describe 'admin/templates/new' do
   
   describe 'preview area' do
     before :each do
-        @template.contents = "
+        @template_obj.contents = "
  * whatever
  * whatever else
 "
@@ -105,19 +105,19 @@ describe 'admin/templates/new' do
     end
     
     it 'should not exist if the template contents are the empty string' do
-      @template.contents = ''
+      @template_obj.contents = ''
       do_render
       response.should_not have_tag('div[id=?]', 'preview')
     end
     
     it 'should not exist if the template contents are nil' do
-      @template.contents = nil
+      @template_obj.contents = nil
       do_render
       response.should_not have_tag('div[id=?]', 'preview')
     end
     
     it 'should not exist if the template contents are a completely blank string' do
-      @template.contents = '     '
+      @template_obj.contents = '     '
       do_render
       response.should_not have_tag('div[id=?]', 'preview')
     end

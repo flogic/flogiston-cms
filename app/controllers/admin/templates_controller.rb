@@ -1,24 +1,24 @@
 class Admin::TemplatesController < AdminController
   def index
-    @templates = Template.all.sort_by(&:handle)
+    @template_objs = Template.all.sort_by(&:handle)
     @title = 'View all templates'
   end
 
   def show
-    @template = Template.find(params[:id])
-    @title = "Viewing template '#{@template.handle}'"
+    @template_obj = Template.find(params[:id])
+    @title = "Viewing template '#{@template_obj.handle}'"
   end
 
   def new
-    @template = Template.new
+    @template_obj = Template.new
     @title = 'New Template'
   end
 
   def create
-    @template = Template.new(params[:template])
+    @template_obj = Template.new(params[:template])
     
-    if !preview? and @template.save
-      redirect_to(admin_template_path(@template))
+    if !preview? and @template_obj.save
+      redirect_to(admin_template_path(@template_obj))
     else
       @title = 'New Template'
       render :action => 'new'
@@ -26,18 +26,18 @@ class Admin::TemplatesController < AdminController
   end
 
   def edit
-    @template = Template.find(params[:id])
-    @title = "Editing template '#{@template.handle}'"
+    @template_obj = Template.find(params[:id])
+    @title = "Editing template '#{@template_obj.handle}'"
   end
 
   def update
-    @template = Template.find(params[:id])
-    @template.attributes = params[:template]
+    @template_obj = Template.find(params[:id])
+    @template_obj.attributes = params[:template]
     
-    if !preview? and @template.save
-      redirect_to(admin_template_path(@template))
+    if !preview? and @template_obj.save
+      redirect_to(admin_template_path(@template_obj))
     else
-      @title = "Editing template '#{@template.handle}'"
+      @title = "Editing template '#{@template_obj.handle}'"
       render :action => 'edit'
     end
   end

@@ -1,13 +1,13 @@
-- form_for [:admin, template], :html => { :class => 'flogiston-cms' } do |f|
+- form_for [:admin, template_obj], :html => { :class => 'flogiston-cms' } do |f|
   %input{ :type => 'hidden', :name => 'preview' }/
   - unless f.error_messages.blank?
     .errors= f.error_messages
   .field
-    %label{:for => 'template_handle'}
+    %label{:for => 'template_obj_handle'}
       Handle:
     = f.text_field(:handle)
   .field
-    %label{:for => 'template_contents'}
+    %label{:for => 'template_obj_contents'}
       Contents:
     = f.text_area :contents
   .submit.preview
@@ -15,6 +15,6 @@
   .submit
     = f.submit 'Submit'
 
-- unless template.contents.blank?
+- unless template_obj.contents.blank?
   #preview
-    = render :partial => 'show', :locals => { :template => template }
+    = render :partial => 'show', :locals => { :template_obj => template_obj }
