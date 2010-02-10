@@ -1,0 +1,13 @@
+%table#templates.admin
+  %thead
+    %tr.header
+      %th handle
+      %th actions
+  %tbody
+    - @templates.each do |template|
+      %tr.body
+        %td
+          = link_to(template.handle, admin_template_path(template), { :target => '_blank' }) 
+        %td.actions 
+          = link_to 'edit', edit_admin_template_path(template)
+          = link_to 'delete', admin_template_path(template), :confirm => 'Are you sure?', :method => :delete

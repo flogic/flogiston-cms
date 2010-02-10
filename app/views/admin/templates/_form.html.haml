@@ -1,0 +1,20 @@
+- form_for [:admin, template], :html => { :class => 'flogiston-cms' } do |f|
+  %input{ :type => 'hidden', :name => 'preview' }/
+  - unless f.error_messages.blank?
+    .errors= f.error_messages
+  .field
+    %label{:for => 'template_handle'}
+      Handle:
+    = f.text_field(:handle)
+  .field
+    %label{:for => 'template_contents'}
+      Contents:
+    = f.text_area :contents
+  .submit.preview
+    = f.submit 'Preview', :onclick => "this.form['preview'].value = true"
+  .submit
+    = f.submit 'Submit'
+
+- unless template.contents.blank?
+  #preview
+    = render :partial => 'show', :locals => { :template => template }
