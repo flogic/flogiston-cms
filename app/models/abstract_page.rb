@@ -3,7 +3,10 @@ class AbstractPage < ActiveRecord::Base
   
   class << self
     def expand(replacements, text)
-      return '' unless text      
+      return '' unless text
+      
+      replacements = replacements.stringify_keys
+      
       text.gsub(/\{\{\s*\w+\s*\}\}/) do |pattern|
         handle = pattern.match(/\w+/)[0]
         snippet = Snippet.find_by_handle(handle)

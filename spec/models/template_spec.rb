@@ -132,6 +132,14 @@ describe Template do
         @template.full_contents(@replacements).should == "abba dabba This is the replacement yabba dabba"
       end
       
+      it 'should match replacements with symbol keys' do
+        replacements = { :replacement => 'This is the replacement' }
+        
+        contents = 'abba dabba {{ replacement }} yabba dabba'
+        @template.contents = contents
+        @template.full_contents(replacements).should == "abba dabba This is the replacement yabba dabba"
+      end
+      
       it 'should prefer to use a snippet instead of a replacement when there is a conflict' do
         snippet_handle = 'replacement'
         snippet_contents = 'blah blah blah'
