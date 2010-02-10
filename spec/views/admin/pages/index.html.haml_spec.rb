@@ -1,5 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper]))
 
+include PagesHelper
+
 describe 'admin/pages/index' do
   before :each do
     Page.delete_all

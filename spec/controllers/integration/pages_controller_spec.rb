@@ -1,5 +1,7 @@
 require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. .. spec_helper]))
 
+include PagesHelper
+
 describe PagesController do
   describe 'when integrating' do
     
