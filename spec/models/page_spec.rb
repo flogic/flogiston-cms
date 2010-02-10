@@ -178,33 +178,93 @@ describe Page do
   end
   
   describe 'full contents' do
-    it 'should be the page contents in simple cases' do
-      contents = 'abba dabba'
-      @page.contents = contents
-      @page.full_contents.should == contents
+    it 'should accept a hash of replacements' do
+      lambda { @page.full_contents({}) }.should_not raise_error(ArgumentError)
     end
     
-    it 'should include the contents of any referenced snippet' do
-      snippet_handle = 'testsnip'
-      snippet_contents = 'blah blah blah'
-      Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
+    it 'should not require a hash of replacements' do
+      lambda { @page.full_contents }.should_not raise_error(ArgumentError)      
+    end
+    
+    describe 'when no replacements are specified' do
+      it 'should be the page contents in simple cases' do
+        contents = 'abba dabba'
+        @page.contents = contents
+        @page.full_contents.should == contents
+      end
+    
+      it 'should include the contents of any referenced snippet' do
+        snippet_handle = 'testsnip'
+        snippet_contents = 'blah blah blah'
+        Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
       
-      @page = Page.generate!(:contents => "big bag boom {{ #{snippet_handle} }} badaboom")
-      @page.full_contents.should == "big bag boom #{snippet_contents} badaboom"
-    end
+        @page = Page.generate!(:contents => "big bag boom {{ #{snippet_handle} }} badaboom")
+        @page.full_contents.should == "big bag boom #{snippet_contents} badaboom"
+      end
     
-    it 'should handle multiple snippet references' do
-      snippets = []
-      snippets.push Snippet.generate!(:handle => 'testsnip1', :contents => 'blah blah blah')
-      snippets.push Snippet.generate!(:handle => 'testsnip2', :contents => 'bing bang bong')
+      it 'should handle multiple snippet references' do
+        snippets = []
+        snippets.push Snippet.generate!(:handle => 'testsnip1', :contents => 'blah blah blah')
+        snippets.push Snippet.generate!(:handle => 'testsnip2', :contents => 'bing bang bong')
       
-      @page = Page.generate!(:contents => "big bag {{#{snippets[0].handle}}} boom {{ #{snippets[1].handle} }} badaboom")
-      @page.full_contents.should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
+        @page = Page.generate!(:contents => "big bag {{#{snippets[0].handle}}} boom {{ #{snippets[1].handle} }} badaboom")
+        @page.full_contents.should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
+      end
+    
+      it 'should replace an unknown snippet reference with the empty string' do
+        @page = Page.generate!(:contents => "big bag boom {{ who_knows }} badaboom")
+        @page.full_contents.should == "big bag boom  badaboom"
+      end
     end
     
-    it 'should replace an unknown snippet reference with the empty string' do
-      @page = Page.generate!(:contents => "big bag boom {{ who_knows }} badaboom")
-      @page.full_contents.should == "big bag boom  badaboom"
+    describe 'when replacements are specified' do
+      before :each do
+        @replacements = { 'replacement' => 'This is the replacement'}
+      end
+      
+      it 'should be the page contents in simple cases and there are no replacement matches' do
+        contents = 'abba dabba'
+        @page.contents = contents
+        @page.full_contents(@replacements).should == contents
+      end
+    
+      it 'should include the contents of any referenced snippet if it does not match a replacement' do
+        snippet_handle = 'testsnip'
+        snippet_contents = 'blah blah blah'
+        Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
+      
+        @page = Page.generate!(:contents => "big bag boom {{ #{snippet_handle} }} badaboom")
+        @page.full_contents(@replacements).should == "big bag boom #{snippet_contents} badaboom"
+      end
+    
+      it 'should handle multiple snippet references that do not match replacements' do
+        snippets = []
+        snippets.push Snippet.generate!(:handle => 'testsnip1', :contents => 'blah blah blah')
+        snippets.push Snippet.generate!(:handle => 'testsnip2', :contents => 'bing bang bong')
+      
+        @page = Page.generate!(:contents => "big bag {{#{snippets[0].handle}}} boom {{ #{snippets[1].handle} }} badaboom")
+        @page.full_contents(@replacements).should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
+      end
+    
+      it 'should replace a matched replacement with its replacement string' do
+        contents = 'abba dabba {{ replacement }} yabba dabba'
+        @page.contents = contents
+        @page.full_contents(@replacements).should == "abba dabba This is the replacement yabba dabba"
+      end
+      
+      it 'should prefer to use a snippet instead of a replacement when there is a conflict' do
+        snippet_handle = 'replacement'
+        snippet_contents = 'blah blah blah'
+        Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
+      
+        @page = Page.generate!(:contents => "big bag boom {{ #{snippet_handle} }} badaboom")
+        @page.full_contents(@replacements).should == "big bag boom #{snippet_contents} badaboom"        
+      end
+
+      it 'should replace an unknown snippet reference with the empty string' do
+        @page = Page.generate!(:contents => "big bag boom {{ who_knows }} badaboom")
+        @page.full_contents(@replacements).should == "big bag boom  badaboom"
+      end      
     end
   end
 end

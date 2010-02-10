@@ -26,7 +26,7 @@ class Page < AbstractPage
     "/#{handle}"
   end
   
-  def full_contents
-    self.class.expand(contents)
+  def full_contents(replacements = {})
+    self.class.expand(replacements, contents)
   end
 end
