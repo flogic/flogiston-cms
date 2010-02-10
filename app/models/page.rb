@@ -26,11 +26,6 @@ class Page < AbstractPage
   end
   
   def full_contents
-    return '' unless contents
-    contents.gsub(/\{\{\s*\w+\s*\}\}/) do |pattern|
-      handle = pattern.match(/\w+/)[0]
-      snippet = Snippet.find_by_handle(handle)
-      snippet ? snippet.contents : ''
-    end
+    self.class.expand(contents)
   end
 end
