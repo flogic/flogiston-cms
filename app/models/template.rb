@@ -1,4 +1,5 @@
 class Template < AbstractPage
+  has_many :pages
   validates_uniqueness_of :handle
   
   def validate

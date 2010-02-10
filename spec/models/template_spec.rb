@@ -63,6 +63,18 @@ describe Template do
     end
   end
   
+  describe 'associations' do
+    it 'can have pages' do
+      Template.new.should respond_to(:pages)
+    end
+    
+    it 'should allow setting and retrieving pages' do
+      template = Template.generate!
+      template.pages << page = Page.generate!
+      template.pages.should include(page)
+    end
+  end
+  
   describe 'as a class' do
     it 'should be able to check if a given handle is valid' do
       Template.should respond_to(:valid_handle?)

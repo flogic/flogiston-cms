@@ -1,4 +1,5 @@
 class Page < AbstractPage
+  belongs_to :template
   validates_uniqueness_of :handle
   
   def validate
