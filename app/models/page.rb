@@ -27,6 +27,7 @@ class Page < AbstractPage
   end
   
   def full_contents(replacements = {})
-    self.class.expand(replacements, contents)
+    expanded = self.class.expand(replacements, contents)
+    template ? template.full_contents(replacements.merge('contents' => expanded)) : expanded
   end
 end
