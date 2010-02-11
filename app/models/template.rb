@@ -16,5 +16,10 @@ class Template < AbstractPage
     view_contents = view.instance_variable_get('@content_for_layout')
     ActionView::Base.new.render({ :inline => full_contents(:contents => view_contents) }, local_assigns)
   end
+  
+  def refresh
+    reload unless new_record?
+    self
+  end
   ###
 end

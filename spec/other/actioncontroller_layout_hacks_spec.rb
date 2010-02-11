@@ -34,6 +34,11 @@ describe ActionController::Layout do
         @layout_obj.send(:find_layout, @template_obj)
       end
       
+      it 'should refresh the Template object' do
+        @template_obj.expects(:refresh)
+        @layout_obj.send(:find_layout, @template_obj)
+      end
+      
       it 'should return the Template object' do
         @layout_obj.send(:find_layout, @template_obj).should == @template_obj
       end

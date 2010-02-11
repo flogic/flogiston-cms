@@ -233,5 +233,43 @@ describe Template do
         @template.render_template(@view)
       end
     end
+    
+    it 'should refresh itself' do
+      @template.should respond_to(:refresh)
+    end
+    
+    describe 'refreshing' do
+      describe 'if the template is not a new record' do
+        before :each do
+          @template = Template.generate!
+        end
+        
+        it 'should simply reload' do
+          @template.expects(:reload)
+          @template.refresh
+        end
+        
+        it 'should return itself' do
+          @template.refresh.should == @template
+        end
+      end
+      
+      describe 'if the template is a new record' do
+        before :each do
+          @template = Template.spawn
+        end
+        
+        it 'should simply reload' do
+          @template.expects(:reload).never
+          @template.refresh
+        end
+        
+        it 'should return itself' do
+          @template.refresh.should == @template
+        end
+      end
+      
+      it 'should eventually be more efficient and check if a reload is necessary'
+    end
   end
 end
