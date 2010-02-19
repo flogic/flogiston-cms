@@ -189,8 +189,10 @@ describe Template do
         ActionView::Base.stubs(:new).returns(@view_obj)
         
         @view = 'some view'
+        @controller = 'some controller'
         @view_contents = 'some view contents'
         @view.instance_variable_set('@content_for_layout', @view_contents)
+        @view.stubs(:controller).returns(@controller)
         @locals = { :this => :that, :other => :thing }
       end
       
@@ -208,6 +210,11 @@ describe Template do
       
       it 'should initialize an ActionView::Base object' do
         ActionView::Base.expects(:new).returns(@view_obj)
+        @template.render_template(@view, @locals)
+      end
+      
+      it "should set the ActionView::Base object's controller" do
+        @view_obj.expects(:controller=).with(@controller)
         @template.render_template(@view, @locals)
       end
       
