@@ -185,14 +185,11 @@ describe Template do
         @template_full_contents = 'full contents'
         @template.stubs(:full_contents).returns(@template_full_contents)
         
-        @view_obj = ActionView::Base.new
-        ActionView::Base.stubs(:new).returns(@view_obj)
+        @template_obj = ActionView::Template.new('')
+        @template_obj.stubs(:render_template)
+        ActionView::Template.stubs(:new).returns(@template_obj)
         
         @view = 'some view'
-        @controller = 'some controller'
-        @view_contents = 'some view contents'
-        @view.instance_variable_set('@content_for_layout', @view_contents)
-        @view.stubs(:controller).returns(@controller)
         @locals = { :this => :that, :other => :thing }
       end
       
@@ -208,35 +205,40 @@ describe Template do
         lambda { @template.render_template }.should raise_error(ArgumentError)
       end
       
-      it 'should initialize an ActionView::Base object' do
-        ActionView::Base.expects(:new).returns(@view_obj)
+      it 'should initialize an ActionView::Template object with an empty argument' do
+        ActionView::Template.expects(:new).with('').returns(@template_obj)
         @template.render_template(@view, @locals)
       end
       
-      it "should set the ActionView::Base object's controller" do
-        @view_obj.expects(:controller=).with(@controller)
+      it "should get the template full contents" do
+        @template.expects(:full_contents).returns(@template_full_contents)
         @template.render_template(@view, @locals)
       end
       
-      it "should get the template full contents, using the view contents as a replacement for 'content'" do
-        @template.expects(:full_contents).with(:contents => @view_contents).returns(@template_full_contents)
+      it "should set the ActionView::Template object's source to the template's full contents" do
         @template.render_template(@view, @locals)
+        @template_obj.source.should == @template_full_contents
       end
       
-      it 'should make the ActionView::Base object render the template full contents, using the local assigns' do
-        @view_obj.expects(:render).with({ :inline => @template_full_contents }, @locals)
+      it "should set the ActionView::Template object to recompile" do
+        @template.render_template(@view, @locals)
+        @template_obj.recompile?.should be_true
+      end
+      
+      it 'should make the ActionView::Template object render the template with the given view and local assigns' do
+        @template_obj.expects(:render_template).with(@view, @locals)
         @template.render_template(@view, @locals)
       end
       
       it 'should return the result of the rendering' do
         @results = 'render results'
-        @view_obj.stubs(:render).returns(@results)
+        @template_obj.stubs(:render_template).returns(@results)
         
         @template.render_template(@view, @locals).should == @results
       end
       
       it 'should default the local assigns to the empty hash' do
-        @view_obj.expects(:render).with({ :inline => @template_full_contents }, {})
+        @template_obj.expects(:render_template).with(@view, {})
         @template.render_template(@view)
       end
     end

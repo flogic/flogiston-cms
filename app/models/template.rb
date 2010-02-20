@@ -13,10 +13,17 @@ class Template < AbstractPage
   end
   
   def render_template(view, local_assigns = {})
-    view_contents = view.instance_variable_get('@content_for_layout')
-    renderer = ActionView::Base.new
-    renderer.controller = view.controller
-    renderer.render({ :inline => full_contents(:contents => view_contents) }, local_assigns)
+    renderer = ActionView::Template.new('')
+    renderer.instance_eval <<-eval_string
+      def source
+        #{full_contents.inspect}
+      end
+
+      def recompile?
+        true
+      end
+    eval_string
+    renderer.render_template(view, local_assigns)
   end
   
   def refresh
