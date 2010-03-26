@@ -281,4 +281,16 @@ describe Template do
       it 'should eventually be more efficient and check if a reload is necessary'
     end
   end
+  
+  describe 'to support pretending to be an ActionView Template (view)' do
+    it "should indicate whether it's exempt from layout" do
+      @template.should respond_to(:exempt_from_layout?)
+    end
+    
+    describe "indicating whether it's exempt from layout" do
+      it 'should return false' do
+        @template.exempt_from_layout?.should == false
+      end
+    end
+  end
 end

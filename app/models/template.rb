@@ -31,4 +31,10 @@ class Template < AbstractPage
     self
   end
   ###
+  
+  ### for ActionView Template (view) fakery
+  def exempt_from_layout?
+    false
+  end
+  ###
 end
