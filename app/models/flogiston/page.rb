@@ -1,4 +1,4 @@
-class Page < AbstractPage
+class Flogiston::Page < Flogiston::AbstractPage
   belongs_to :template
   validates_uniqueness_of :handle
   

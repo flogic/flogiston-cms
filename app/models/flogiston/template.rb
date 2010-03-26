@@ -1,4 +1,4 @@
-class Template < AbstractPage
+class Flogiston::Template < Flogiston::AbstractPage
   has_many :pages
   
   validates_uniqueness_of :handle

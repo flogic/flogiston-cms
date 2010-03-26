@@ -1,4 +1,4 @@
-class AbstractPage < ActiveRecord::Base
+class Flogiston::AbstractPage < ActiveRecord::Base
   set_table_name 'pages'
   
   class << self
