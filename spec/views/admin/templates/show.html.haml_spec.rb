@@ -28,4 +28,9 @@ describe 'admin/templates/show' do
     do_render
     response.should have_tag('pre', :text => /\* whate&lt;ve&gt;r/)
   end
+
+  it 'should include an edit link' do
+    do_render
+    response.should have_tag('a[href=?]', edit_admin_template_path(@template_obj))
+  end
 end

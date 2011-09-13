@@ -28,4 +28,9 @@ describe 'admin/snippets/show' do
     do_render
     response.should have_tag('li', :text => /whatever/)
   end
+
+  it 'should include an edit link' do
+    do_render
+    response.should have_tag('a[href=?]', edit_admin_snippet_path(@snippet))
+  end
 end
