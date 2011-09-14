@@ -3,11 +3,11 @@
   - unless f.error_messages.blank?
     .errors= f.error_messages
   .field
-    %label{:for => 'template_obj_handle'}
+    %label{:for => 'template_handle'}
       Handle:
     = f.text_field(:handle)
   .field
-    %label{:for => 'template_obj_contents'}
+    %label{:for => 'template_contents'}
       Contents:
     = f.text_area :contents
   .submit.preview
