@@ -1,0 +1,4 @@
+= @template_obj.handle
+= link_to 'edit', edit_admin_template_path(@template_obj)
+
+= render :partial => 'show', :locals => { :template_obj => @template_obj }
