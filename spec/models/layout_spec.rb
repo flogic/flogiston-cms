@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. spec_helper]))
 
 describe Layout do
   before :each do
-    @layout = Layout.new
+    @layout = Layout.spawn
   end
 
   describe 'attributes' do
@@ -32,6 +32,11 @@ describe Layout do
       Layout.generate!(:handle => 'duplicate handle')
       dup = Layout.generate(:handle => 'duplicate handle')
       dup.errors.should be_invalid(:handle)
+    end
+    
+    it 'should require handle' do
+      layout = Layout.generate(:handle => nil)
+      layout.errors.should be_invalid(:handle)
     end
     
     it 'should not check if the handle is valid according to the class' do

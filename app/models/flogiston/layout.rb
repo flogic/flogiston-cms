@@ -1,6 +1,7 @@
 class Flogiston::Layout < Flogiston::AbstractPage
   validates_uniqueness_of :handle
-  
+  validates_presence_of   :handle
+
   def full_contents(replacements = {})
     self.class.expand(replacements, contents)
   end
