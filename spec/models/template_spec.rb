@@ -40,6 +40,18 @@ describe Template do
       Template.generate(:handle => handle)
     end
   end
+
+  describe 'associations' do
+    it 'can have pages' do
+      @template.should respond_to(:pages)
+    end
+
+    it 'should allow setting and retrieving pages' do
+      template = Template.generate!
+      template.pages << page = Page.generate!
+      template.pages.should include(page)
+    end
+  end
   
   it 'should have full contents' do
     @template.should respond_to(:full_contents)
