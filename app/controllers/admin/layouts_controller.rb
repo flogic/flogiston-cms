@@ -1,51 +1,51 @@
 class Admin::LayoutsController < AdminController
   def index
-    @template_objs = Template.all.sort_by(&:handle)
-    @title = 'View all templates'
+    @layouts = Layout.all.sort_by(&:handle)
+    @title = 'View all layouts'
   end
 
   def show
-    @template_obj = Template.find(params[:id])
-    @title = "Viewing template '#{@template_obj.handle}'"
+    @layout = Layout.find(params[:id])
+    @title = "Viewing layout '#{@layout.handle}'"
   end
 
   def new
-    @template_obj = Template.new
-    @title = 'New Template'
+    @layout = Layout.new
+    @title = 'New layout'
   end
 
   def create
-    @template_obj = Template.new(params[:template])
+    @layout = Layout.new(params[:layout])
     
-    if !preview? and @template_obj.save
-      redirect_to(admin_template_path(@template_obj))
+    if !preview? and @layout.save
+      redirect_to(admin_layout_path(@layout))
     else
-      @title = 'New Template'
+      @title = 'New layout'
       render :action => 'new'
     end
   end
 
   def edit
-    @template_obj = Template.find(params[:id])
-    @title = "Editing template '#{@template_obj.handle}'"
+    @layout = Layout.find(params[:id])
+    @title = "Editing layout '#{@layout.handle}'"
   end
 
   def update
-    @template_obj = Template.find(params[:id])
-    @template_obj.attributes = params[:template]
+    @layout = Layout.find(params[:id])
+    @layout.attributes = params[:layout]
     
-    if !preview? and @template_obj.save
-      redirect_to(admin_template_path(@template_obj))
+    if !preview? and @layout.save
+      redirect_to(admin_layout_path(@layout))
     else
-      @title = "Editing template '#{@template_obj.handle}'"
+      @title = "Editing layout '#{@layout.handle}'"
       render :action => 'edit'
     end
   end
 
   def destroy
-    template = Template.find(params[:id])
-    template.destroy
-    redirect_to admin_templates_path
+    layout = Layout.find(params[:id])
+    layout.destroy
+    redirect_to admin_layouts_path
   end
   
   
