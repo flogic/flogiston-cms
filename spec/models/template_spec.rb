@@ -2,7 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. spec_helper]))
 
 describe Template do
   before :each do
-    @template = Template.new
+    @template = Template.spawn
   end
 
   describe 'attributes' do
@@ -32,6 +32,11 @@ describe Template do
       Template.generate!(:handle => 'duplicate handle')
       dup = Template.generate(:handle => 'duplicate handle')
       dup.errors.should be_invalid(:handle)
+    end
+    
+    it 'should require handle' do
+      template = Template.generate(:handle => nil)
+      template.errors.should be_invalid(:handle)
     end
     
     it 'should not check if the handle is valid according to the class' do
