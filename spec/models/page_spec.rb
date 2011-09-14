@@ -62,6 +62,19 @@ describe Page do
       page.errors.should_not be_invalid(:handle)
     end
   end
+
+  describe 'associations' do
+    it 'can have a template' do
+      Page.new.should respond_to(:template)
+    end
+
+    it 'allows setting and retrieving the template' do
+      @page = Page.generate!
+      @page.template = template = Template.generate!
+      @page.save!
+      Page.find(@page.id).template.should == template
+    end
+  end
   
   describe 'as a class' do
     it 'should be able to check if a given handle is valid' do
@@ -170,15 +183,36 @@ describe Page do
     end
     
     it 'should not require a hash of replacements' do
-      lambda { @page.full_contents }.should_not raise_error(ArgumentError)      
+      lambda { @page.full_contents }.should_not raise_error(ArgumentError)
     end
     
-    it 'should return the results of expanding our contents' do
-      @contents = "expanded page contents"
-      Page.stubs(:expand).returns(@contents)
-      @page.full_contents
+    describe 'when the page has a template' do
+      before :each do
+        @template = Template.generate!
+        @page = Page.generate!(:template => @template)
+        @contents = "expanded page contents"
+        Page.stubs(:expand).returns(@contents)
+      end
+
+      it "should return the template full contents with the page full contents specifed as the 'contents' replacement" do
+        @template.expects(:full_contents).with({ 'contents' => @contents })
+        @page.full_contents
+      end
+
+      it 'should preserve any replacements specified when expanding the template' do
+        @template.expects(:full_contents).with({ 'contents' => @contents, 'foo' =>'bar' })
+        @page.full_contents('foo' => 'bar')
+      end
     end
-    
+
+    describe 'when the page has no template' do
+      it 'should return the results of expanding our contents' do
+        @contents = "expanded page contents"
+        Page.stubs(:expand).returns(@contents)
+        @page.full_contents
+      end
+    end
+
     describe 'when no replacements are specified' do
       it 'should be the page contents in simple cases' do
         contents = 'abba dabba'
