@@ -1,4 +1,4 @@
-class Admin::TemplatesController < AdminController
+class Admin::LayoutsController < AdminController
   def index
     @template_objs = Template.all.sort_by(&:handle)
     @title = 'View all templates'
