@@ -4,6 +4,6 @@ ActionController::Routing::Routes.draw do |map|
   map.namespace :admin do |admin|
     admin.resources :pages
     admin.resources :snippets
-    admin.resources :templates
+    admin.resources :layouts
   end
 end

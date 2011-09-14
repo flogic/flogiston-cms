@@ -1,54 +1,54 @@
 require File.expand_path(File.join(File.dirname(__FILE__), *%w[.. .. .. spec_helper]))
 
-describe 'admin/templates/new' do
+describe 'admin/layouts/new' do
   before :each do
-    assigns[:template_obj] = @template_obj = Template.new
+    assigns[:layout] = @layout = Layout.new
   end
 
   def do_render
-    render 'admin/templates/new'
+    render 'admin/layouts/new'
   end
 
-  it 'should include a template creation form' do
+  it 'should include a layout creation form' do
     do_render
-    response.should have_tag('form[id=?]', 'new_template')
+    response.should have_tag('form[id=?]', 'new_layout')
   end
 
-  describe 'template creation form' do
-    it 'should point to the template create action' do
+  describe 'layout creation form' do
+    it 'should point to the layout create action' do
       do_render
-      response.should have_tag('form[id=?][action=?]', 'new_template', admin_templates_path)
+      response.should have_tag('form[id=?][action=?]', 'new_layout', admin_layouts_path)
     end
 
     it 'should use the POST http method' do
       do_render
-      response.should have_tag('form[id=?][method=?]', 'new_template', 'post')
+      response.should have_tag('form[id=?][method=?]', 'new_layout', 'post')
     end
 
-    it 'should have an input for the template handle' do
+    it 'should have an input for the layout handle' do
       do_render
-      response.should have_tag('form[id=?]', 'new_template') do
-        with_tag('input[type=?][name=?]', 'text', 'template[handle]')
+      response.should have_tag('form[id=?]', 'new_layout') do
+        with_tag('input[type=?][name=?]', 'text', 'layout[handle]')
       end
     end
 
-    it 'should have an input for the template contents' do
+    it 'should have an input for the layout contents' do
       do_render
-      response.should have_tag('form[id=?]', 'new_template') do
-        with_tag('textarea[name=?]', 'template[contents]')
+      response.should have_tag('form[id=?]', 'new_layout') do
+        with_tag('textarea[name=?]', 'layout[contents]')
       end
     end
     
     it 'should have a preview button' do
       do_render
-      response.should have_tag('form[id=?]', 'new_template') do
+      response.should have_tag('form[id=?]', 'new_layout') do
         with_tag('input[type=?][value=?]', 'submit', 'Preview')
       end
     end
     
     it 'should have a preview input' do
       do_render
-      response.should have_tag('form[id=?]', 'new_template') do
+      response.should have_tag('form[id=?]', 'new_layout') do
         with_tag('input[type=?][name=?]:not([value])', 'hidden', 'preview')
       end
     end
@@ -56,7 +56,7 @@ describe 'admin/templates/new' do
     describe 'preview button' do
       it 'should set the preview input to true' do
         do_render
-        response.should have_tag('form[id=?]', 'new_template') do
+        response.should have_tag('form[id=?]', 'new_layout') do
           with_tag('input[type=?][value=?][onclick*=?][onclick*=?]', 'submit', 'Preview', 'preview', 'true')
         end
       end
@@ -64,16 +64,16 @@ describe 'admin/templates/new' do
 
     it 'should have a submit button' do
       do_render
-      response.should have_tag('form[id=?]', 'new_template') do
+      response.should have_tag('form[id=?]', 'new_layout') do
         with_tag('input[type=?]:not([value=?])', 'submit', 'Preview')
       end
     end
 
     describe 'when errors are available' do
       it 'should display errors in an error region' do
-        @template_obj.errors.add_to_base("error on this template")
+        @layout.errors.add_to_base("error on this layout")
         do_render
-        response.should have_tag('div[class=?]', 'errors', :text => /error on this template/)
+        response.should have_tag('div[class=?]', 'errors', :text => /error on this layout/)
       end
     end
 
@@ -87,38 +87,38 @@ describe 'admin/templates/new' do
   
   describe 'preview area' do
     before :each do
-        @template_obj.contents = "
+        @layout.contents = "
  * whate<ve>r
  * whatever else
 "
     end
     
-    it 'should exist if the template has contents' do
+    it 'should exist if the layout has contents' do
       do_render
       response.should have_tag('div[id=?]', 'preview')
     end
     
-    it 'should include the template contents without formatting, with entities escaped, and in a pre block' do
+    it 'should include the layout contents without formatting, with entities escaped, and in a pre block' do
       do_render
       response.should have_tag('div[id=?]', 'preview') do
         with_tag('pre', :text => /\* whate&lt;ve&gt;r/)
       end
     end
     
-    it 'should not exist if the template contents are the empty string' do
-      @template_obj.contents = ''
+    it 'should not exist if the layout contents are the empty string' do
+      @layout.contents = ''
       do_render
       response.should_not have_tag('div[id=?]', 'preview')
     end
     
-    it 'should not exist if the template contents are nil' do
-      @template_obj.contents = nil
+    it 'should not exist if the layout contents are nil' do
+      @layout.contents = nil
       do_render
       response.should_not have_tag('div[id=?]', 'preview')
     end
     
-    it 'should not exist if the template contents are a completely blank string' do
-      @template_obj.contents = '     '
+    it 'should not exist if the layout contents are a completely blank string' do
+      @layout.contents = '     '
       do_render
       response.should_not have_tag('div[id=?]', 'preview')
     end

@@ -1,0 +1,13 @@
+%table#layouts.admin
+  %thead
+    %tr.header
+      %th handle
+      %th actions
+  %tbody
+    - @layouts.each do |layout|
+      %tr.body
+        %td
+          = link_to(layout.handle, admin_layout_path(layout), { :target => '_blank' }) 
+        %td.actions 
+          = link_to 'edit', edit_admin_layout_path(layout)
+          = link_to 'delete', admin_layout_path(layout), :confirm => 'Are you sure?', :method => :delete
