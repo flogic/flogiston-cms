@@ -18,7 +18,7 @@ describe Admin::TemplatesController do
 
       it 'should make an empty template list available to the view' do
         do_get
-        assigns[:template_objs].should == []
+        assigns[:templates].should == []
       end
 
       it 'should render the index view' do
@@ -26,7 +26,7 @@ describe Admin::TemplatesController do
         response.should render_template('index')
       end
 
-      it 'should use the admin layout' do
+      it 'should use the admin template' do
         do_get
         response.layout.should == 'layouts/admin'
       end
@@ -40,7 +40,7 @@ describe Admin::TemplatesController do
     describe 'when templates exist' do
       before :each do
         Template.delete_all
-        @template_objs = Array.new(3) { |i| Template.generate!(:handle => "test handle #{10-i}") }
+        @templates = Array.new(3) { |i| Template.generate!(:handle => "test handle #{10-i}") }
       end
 
       it 'should be successful' do
@@ -50,12 +50,12 @@ describe Admin::TemplatesController do
 
       it 'should make a list of the existing templates available to the view' do
         do_get
-        assigns[:template_objs].collect(&:id).sort.should == @template_objs.collect(&:id).sort
+        assigns[:templates].collect(&:id).sort.should == @templates.collect(&:id).sort
       end
       
       it 'should sort the templates by handle' do
         do_get
-        assigns[:template_objs].collect(&:id).should == @template_objs.sort_by(&:handle).collect(&:id)
+        assigns[:templates].collect(&:id).should == @templates.sort_by(&:handle).collect(&:id)
       end
       
       it 'should render the index view' do
@@ -63,7 +63,7 @@ describe Admin::TemplatesController do
         response.should render_template('index')
       end
 
-      it 'should use the admin layout' do
+      it 'should use the admin template' do
         do_get
         response.layout.should == 'layouts/admin'
       end
@@ -77,8 +77,8 @@ describe Admin::TemplatesController do
 
   describe 'show' do
     before :each do
-      @template_obj = Template.generate!
-      @id = @template_obj.id.to_s
+      @template = Template.generate!
+      @id = @template.id.to_s
     end
     
     def do_get
@@ -91,13 +91,13 @@ describe Admin::TemplatesController do
     end
 
     it 'should find the requested template' do
-      Template.expects(:find).with(@id).returns(@template_obj)
+      Template.expects(:find).with(@id).returns(@template)
       do_get
     end
     
     it 'should make the requested template available to the view' do
       do_get
-      assigns[:template_obj].should == @template_obj
+      assigns[:template_obj].should == @template
     end
     
     it 'should render the show template' do
@@ -105,7 +105,7 @@ describe Admin::TemplatesController do
       response.should render_template('admin/templates/show')
     end
     
-    it 'should use the admin layout' do
+    it 'should use the admin template' do
       do_get
       response.layout.should == 'layouts/admin'
     end
@@ -136,7 +136,7 @@ describe Admin::TemplatesController do
       response.should render_template('admin/templates/new')
     end
 
-    it 'should use the admin layout' do
+    it 'should use the admin template' do
       do_get
       response.layout.should == 'layouts/admin'
     end
@@ -150,11 +150,11 @@ describe Admin::TemplatesController do
   describe 'create' do
     describe 'when given a valid template' do
       before :each do
-        @template_obj = Template.spawn
+        @template = Template.spawn
       end
 
       def do_post
-        post :create, :template => @template_obj.attributes
+        post :create, :template => @template.attributes
       end
 
       it 'should create a new template' do
@@ -164,7 +164,7 @@ describe Admin::TemplatesController do
       it 'should use the provided attributes when creating the template' do
         Template.delete_all
         do_post
-        Template.first.handle.should == @template_obj.handle
+        Template.first.handle.should == @template.handle
       end
 
       it 'should redirect to the admin show view for the new template' do
@@ -179,12 +179,12 @@ describe Admin::TemplatesController do
         end
         
         def do_post
-          post :create, :template => @template_obj.attributes.merge('contents' => @new_contents), :preview => true
+          post :create, :template => @template.attributes.merge('contents' => @new_contents), :preview => true
         end
         
         it 'should make the requested template available to the view' do
           do_post
-          assigns[:template_obj].should be_kind_of(Template)
+          assigns[:template_obj].should be_kind_of((Template))
         end
         
         it 'should set the template attributes' do
@@ -201,7 +201,7 @@ describe Admin::TemplatesController do
           response.should render_template('new')
         end
 
-        it 'should use the admin layout' do
+        it 'should use the admin template' do
           do_post
           response.layout.should == 'layouts/admin'
         end
@@ -214,7 +214,7 @@ describe Admin::TemplatesController do
       
       describe 'with an empty preview parameter' do
         def do_post
-          post :create, :template => @template_obj.attributes, :preview => ''
+          post :create, :template => @template.attributes, :preview => ''
         end
         
         it 'should create a new template' do
@@ -226,11 +226,11 @@ describe Admin::TemplatesController do
     describe 'when given an invalid template' do
       before :each do
         Template.generate!(:handle => 'duplicate_handle')
-        @template_obj = Template.spawn(:handle => 'duplicate_handle')
+        @template = Template.spawn(:handle => 'duplicate_handle')
       end
 
       def do_post
-        post :create, :template => @template_obj.attributes
+        post :create, :template => @template.attributes
       end
 
       it 'should be successful' do
@@ -245,7 +245,7 @@ describe Admin::TemplatesController do
 
       it 'should initialize the template with the given attributes' do
         do_post
-        assigns[:template_obj].handle.should == @template_obj.handle
+        assigns[:template_obj].handle.should == @template.handle
       end
 
       it 'should render the new template' do
@@ -253,7 +253,7 @@ describe Admin::TemplatesController do
         response.should render_template('new')
       end
 
-      it 'should use the admin layout' do
+      it 'should use the admin template' do
         do_post
         response.layout.should == 'layouts/admin'
       end
@@ -268,8 +268,8 @@ describe Admin::TemplatesController do
   describe 'edit' do
     describe 'when editing an existing template' do
       before :each do
-        @template_obj = Template.generate!
-        @id = @template_obj.id.to_s
+        @template = Template.generate!
+        @id = @template.id.to_s
       end
 
       def do_get
@@ -283,7 +283,7 @@ describe Admin::TemplatesController do
 
       it 'should make the found template available to the view' do
         do_get
-        assigns[:template_obj].id.should == @template_obj.id
+        assigns[:template_obj].id.should == @template.id
       end
 
       it 'should render the edit template' do
@@ -291,7 +291,7 @@ describe Admin::TemplatesController do
         response.should render_template('admin/templates/edit')
       end
 
-      it 'should use the admin layout' do
+      it 'should use the admin template' do
         do_get
         response.layout.should == 'layouts/admin'
       end
@@ -312,13 +312,13 @@ describe Admin::TemplatesController do
   describe 'update' do
     describe 'when given a valid template' do
       before :each do
-        @template_obj = Template.generate!
-        @id = @template_obj.id.to_s
+        @template = Template.generate!
+        @id = @template.id.to_s
         @new_handle = 'some_unused_handle_I_really_hope'
       end
 
       def do_put
-        put :update, :id => @id, :template => @template_obj.attributes.merge('handle' => @new_handle)
+        put :update, :id => @id, :template => @template.attributes.merge('handle' => @new_handle)
       end
 
       it 'should not create a new template' do
@@ -341,12 +341,12 @@ describe Admin::TemplatesController do
         end
         
         def do_put
-          put :update, :id => @id, :template => @template_obj.attributes.merge('contents' => @new_contents), :preview => true
+          put :update, :id => @id, :template => @template.attributes.merge('contents' => @new_contents), :preview => true
         end
         
         it 'should make the requested template available to the view' do
           do_put
-          assigns[:template_obj].id.should == @template_obj.id
+          assigns[:template_obj].id.should == @template.id
         end
         
         it 'should set the template attributes' do
@@ -364,7 +364,7 @@ describe Admin::TemplatesController do
           response.should render_template('edit')
         end
 
-        it 'should use the admin layout' do
+        it 'should use the admin template' do
           do_put
           response.layout.should == 'layouts/admin'
         end
@@ -377,7 +377,7 @@ describe Admin::TemplatesController do
       
       describe 'with an empty preview parameter' do
         def do_put
-          put :update, :id => @id, :template => @template_obj.attributes.merge('handle' => @new_handle), :preview => ''
+          put :update, :id => @id, :template => @template.attributes.merge('handle' => @new_handle), :preview => ''
         end
         
         it 'should update the template with the provided attributes' do
@@ -391,12 +391,12 @@ describe Admin::TemplatesController do
       before :each do
         Template.delete_all
         Template.generate!(:handle => 'duplicate_handle')
-        @template_obj = Template.generate!
-        @id = @template_obj.id.to_s
+        @template = Template.generate!
+        @id = @template.id.to_s
       end
 
       def do_put
-        put :update, :id => @id, :template => @template_obj.attributes.merge('handle' => 'duplicate_handle')
+        put :update, :id => @id, :template => @template.attributes.merge('handle' => 'duplicate_handle')
       end
 
       it 'should be successful' do
@@ -406,7 +406,7 @@ describe Admin::TemplatesController do
 
       it 'should make the requested template available to the view' do
         do_put
-        assigns[:template_obj].id.should == @template_obj.id
+        assigns[:template_obj].id.should == @template.id
       end
 
       it 'should render the edit template' do
@@ -414,7 +414,7 @@ describe Admin::TemplatesController do
         response.should render_template('edit')
       end
 
-      it 'should use the admin layout' do
+      it 'should use the admin template' do
         do_put
         response.layout.should == 'layouts/admin'
       end
@@ -439,8 +439,8 @@ describe Admin::TemplatesController do
   describe 'destroy' do
     describe 'when given a valid template' do
       before :each do
-        @template_obj = Template.generate!
-        @id = @template_obj.id.to_s
+        @template = Template.generate!
+        @id = @template.id.to_s
       end
 
       def do_delete

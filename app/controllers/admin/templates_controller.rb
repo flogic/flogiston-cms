@@ -1,6 +1,6 @@
 class Admin::TemplatesController < AdminController
   def index
-    @template_objs = Template.all.sort_by(&:handle)
+    @templates = Template.all.sort_by(&:handle)
     @title = 'View all templates'
   end
 
@@ -11,7 +11,7 @@ class Admin::TemplatesController < AdminController
 
   def new
     @template_obj = Template.new
-    @title = 'New Template'
+    @title = 'New template'
   end
 
   def create
@@ -20,7 +20,7 @@ class Admin::TemplatesController < AdminController
     if !preview? and @template_obj.save
       redirect_to(admin_template_path(@template_obj))
     else
-      @title = 'New Template'
+      @title = 'New template'
       render :action => 'new'
     end
   end
@@ -43,8 +43,8 @@ class Admin::TemplatesController < AdminController
   end
 
   def destroy
-    template = Template.find(params[:id])
-    template.destroy
+    template_obj = Template.find(params[:id])
+    template_obj.destroy
     redirect_to admin_templates_path
   end
   

@@ -10,7 +10,7 @@ describe ActionView::PathSet do
       @pathset = ActionView::PathSet.new
     end
     
-    describe 'when not given a Template object' do
+    describe 'when not given a Layout object' do
       it 'should use the old find-template logic with the given arguments' do
         @pathset.expects(:find_template_without_flogiston_layout).with(@path, @format, @fallback)
         @pathset.send(:find_template, @path, @format, @fallback)
@@ -23,18 +23,18 @@ describe ActionView::PathSet do
       end
     end
     
-    describe 'when given a Template object' do
+    describe 'when given a Layout object' do
       before :each do
-        @template_obj = Template.new
+        @layout = Layout.new
       end
       
       it 'should not use the old find-template logic with the given arguments' do
         @pathset.expects(:find_template_without_flogiston_layout).never
-        @pathset.send(:find_template, @template_obj)
+        @pathset.send(:find_template, @layout)
       end
       
-      it 'should return the Template object' do
-        @pathset.send(:find_template, @template_obj).should == @template_obj
+      it 'should return the Layout object' do
+        @pathset.send(:find_template, @layout).should == @layout
       end
     end
   end

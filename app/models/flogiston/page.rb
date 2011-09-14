@@ -1,5 +1,6 @@
 class Flogiston::Page < Flogiston::AbstractPage
   belongs_to :template
+
   validates_uniqueness_of :handle
   
   def validate
@@ -28,6 +29,8 @@ class Flogiston::Page < Flogiston::AbstractPage
   
   def full_contents(replacements = {})
     expanded = self.class.expand(replacements, contents)
-    template ? template.full_contents(replacements.merge('contents' => expanded)) : expanded
+    return expanded unless template
+
+    template.full_contents(replacements.merge('contents' => expanded))
   end
 end

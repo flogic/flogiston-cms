@@ -1,0 +1,4 @@
+= @layout.handle
+= link_to 'edit', edit_admin_layout_path(@layout)
+
+= render :partial => 'show', :locals => { :layout => @layout }

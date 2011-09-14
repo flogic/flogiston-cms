@@ -40,12 +40,12 @@ describe Template do
       Template.generate(:handle => handle)
     end
   end
-  
+
   describe 'associations' do
     it 'can have pages' do
       @template.should respond_to(:pages)
     end
-    
+
     it 'should allow setting and retrieving pages' do
       template = Template.generate!
       template.pages << page = Page.generate!
@@ -152,144 +152,6 @@ describe Template do
       it 'should replace an unknown snippet reference with the empty string' do
         @template = Template.generate!(:contents => "big bag boom {{ who_knows }} badaboom")
         @template.full_contents(@replacements).should == "big bag boom  badaboom"
-      end      
-    end
-  end
-  
-  describe 'to support pretending to be an ActionView Layout' do
-    it 'should have a path without format and extension' do
-      @template.should respond_to(:path_without_format_and_extension)
-    end
-    
-    describe 'path_without_format_and_extension' do
-      before :each do
-        @template.handle = 'some_template'
-      end
-      
-      it 'should indicate this is a Template object' do
-        @template.path_without_format_and_extension.should include('Template')
-      end
-      
-      it 'should include the handle' do
-        @template.path_without_format_and_extension.should include(@template.handle)
-      end
-    end
-    
-    it 'should render_template' do
-      @template.should respond_to(:render_template)
-    end
-    
-    describe 'render_template' do
-      before :each do
-        @template.contents = 'contents go here, yes?'
-        @template_full_contents = 'full contents'
-        @template.stubs(:full_contents).returns(@template_full_contents)
-        
-        @template_obj = ActionView::Template.new('')
-        @template_obj.stubs(:render_template)
-        ActionView::Template.stubs(:new).returns(@template_obj)
-        
-        @view = 'some view'
-        @locals = { :this => :that, :other => :thing }
-      end
-      
-      it 'should accept a view and local assigns' do
-        lambda { @template.render_template(@view, @locals) }.should_not raise_error(ArgumentError)
-      end
-      
-      it 'should accept just a view' do
-        lambda { @template.render_template(@view) }.should_not raise_error(ArgumentError)
-      end
-      
-      it 'should require a view' do
-        lambda { @template.render_template }.should raise_error(ArgumentError)
-      end
-      
-      it 'should initialize an ActionView::Template object with an empty argument' do
-        ActionView::Template.expects(:new).with('').returns(@template_obj)
-        @template.render_template(@view, @locals)
-      end
-      
-      it "should get the template full contents" do
-        @template.expects(:full_contents).returns(@template_full_contents)
-        @template.render_template(@view, @locals)
-      end
-      
-      it "should set the ActionView::Template object's source to the template's full contents" do
-        @template.render_template(@view, @locals)
-        @template_obj.source.should == @template_full_contents
-      end
-      
-      it "should set the ActionView::Template object to recompile" do
-        @template.render_template(@view, @locals)
-        @template_obj.recompile?.should be_true
-      end
-      
-      it 'should make the ActionView::Template object render the template with the given view and local assigns' do
-        @template_obj.expects(:render_template).with(@view, @locals)
-        @template.render_template(@view, @locals)
-      end
-      
-      it 'should return the result of the rendering' do
-        @results = 'render results'
-        @template_obj.stubs(:render_template).returns(@results)
-        
-        @template.render_template(@view, @locals).should == @results
-      end
-      
-      it 'should default the local assigns to the empty hash' do
-        @template_obj.expects(:render_template).with(@view, {})
-        @template.render_template(@view)
-      end
-    end
-    
-    it 'should refresh itself' do
-      @template.should respond_to(:refresh)
-    end
-    
-    describe 'refreshing' do
-      describe 'if the template is not a new record' do
-        before :each do
-          @template = Template.generate!
-        end
-        
-        it 'should simply reload' do
-          @template.expects(:reload)
-          @template.refresh
-        end
-        
-        it 'should return itself' do
-          @template.refresh.should == @template
-        end
-      end
-      
-      describe 'if the template is a new record' do
-        before :each do
-          @template = Template.spawn
-        end
-        
-        it 'should simply reload' do
-          @template.expects(:reload).never
-          @template.refresh
-        end
-        
-        it 'should return itself' do
-          @template.refresh.should == @template
-        end
-      end
-      
-      it 'should eventually be more efficient and check if a reload is necessary'
-    end
-  end
-  
-  describe 'to support pretending to be an ActionView Template (view)' do
-    it "should indicate whether it's exempt from layout" do
-      @template.should respond_to(:exempt_from_layout?)
-    end
-    
-    describe "indicating whether it's exempt from layout" do
-      it 'should return false' do
-        @template.exempt_from_layout?.should == false
       end
     end
   end

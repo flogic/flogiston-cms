@@ -4,7 +4,7 @@
       %th handle
       %th actions
   %tbody
-    - @template_objs.each do |template_obj|
+    - @templates.each do |template_obj|
       %tr.body
         %td
           = link_to(template_obj.handle, admin_template_path(template_obj), { :target => '_blank' }) 

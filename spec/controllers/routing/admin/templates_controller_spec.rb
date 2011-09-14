@@ -44,7 +44,7 @@ describe Admin::TemplatesController, "#params_from" do
     params_from(:get, "/admin/templates/1").should == {:controller => "admin/templates", :action => "show", :id => "1"}
   end
   
-  it "should generate params { :controller => 'templates', action => 'edit', id => '1' } from GET /admin/templates/1;edit" do
+  it "should generate params { :controller => 'templates', action => 'edit', id => '1' } from GET /admin/templates/1/edit" do
     params_from(:get, "/admin/templates/1/edit").should == {:controller => "admin/templates", :action => "edit", :id => "1"}
   end
   
