@@ -1,6 +1,6 @@
 module ActionController::Layout
   def find_layout_with_flogiston_layout(*args)
-    if args.first.is_a?(Template)
+    if args.first.is_a?(::Layout)
       temp = args.first
       temp.refresh
       return temp

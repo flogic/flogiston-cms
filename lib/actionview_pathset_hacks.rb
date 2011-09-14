@@ -1,6 +1,6 @@
 class ActionView::PathSet
   def find_template_with_flogiston_layout(*args)
-    if args.first.is_a?(::Template)
+    if args.first.is_a?(::Layout)
       return args.first
     else
       find_template_without_flogiston_layout(*args)
