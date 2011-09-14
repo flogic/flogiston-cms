@@ -1,6 +1,4 @@
-class Flogiston::Template < Flogiston::AbstractPage
-  has_many :pages
-  
+class Flogiston::Layout < Flogiston::AbstractPage
   validates_uniqueness_of :handle
   
   def full_contents(replacements = {})
@@ -9,7 +7,7 @@ class Flogiston::Template < Flogiston::AbstractPage
   
   ### for ActionView Layout fakery
   def path_without_format_and_extension
-    "<Template '#{handle}'>"
+    "<Layout '#{handle}'>"
   end
   
   def render_template(view, local_assigns = {})
