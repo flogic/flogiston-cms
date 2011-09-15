@@ -207,6 +207,37 @@ describe Page do
         @template.stubs(:full_contents).returns(template_contents)
         @page.full_contents.should == template_contents
       end
+
+      describe 'when the page holds values' do
+        before do
+          @values = { 'title' => 'test title', 'color' => 'blue'}
+          @page.values = @values
+        end
+
+        it 'should pass the values along with the page full contents to the template' do
+          expected = { 'title' => 'test title', 'color' => 'blue', 'contents' => @contents }
+          @template.expects(:full_contents).with(expected)
+          @page.full_contents
+        end
+
+        it "should ignore any value that happens to be called 'contents'" do
+          @page.values['contents'] = 'something else, why not?'
+          expected = { 'title' => 'test title', 'color' => 'blue', 'contents' => @contents }
+          @template.expects(:full_contents).with(expected)
+          @page.full_contents
+        end
+      end
+
+      describe 'when the page explicitly holds no values' do
+        before do
+          @page.values = nil
+        end
+
+        it 'should pass the page full contents to the template' do
+          @template.expects(:full_contents).with({ 'contents' => @contents })
+          @page.full_contents
+        end
+      end
     end
 
     describe 'when the page has no template' do
@@ -215,6 +246,13 @@ describe Page do
       end
 
       it 'should expand the page contents' do
+        @page.contents = 'some contents'
+        Page.expects(:expand).with({}, @page.contents).returns(@contents)
+        @page.full_contents
+      end
+
+      it 'should pass no replacements to expansion even if the page holds values' do
+        @page.values = { 'title' => 'test title', 'color' => 'blue' }
         @page.contents = 'some contents'
         Page.expects(:expand).with({}, @page.contents).returns(@contents)
         @page.full_contents

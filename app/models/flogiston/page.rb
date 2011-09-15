@@ -30,10 +30,11 @@ class Flogiston::Page < Flogiston::AbstractPage
   end
   
   def full_contents
-    replacements = {}
-    expanded = self.class.expand(replacements, contents)
+    expanded = self.class.expand({}, contents)
     return expanded unless template
 
-    template.full_contents(replacements.merge('contents' => expanded))
+    replacements = values || {}
+    replacements.merge!('contents' => expanded)
+    template.full_contents(replacements)
   end
 end
