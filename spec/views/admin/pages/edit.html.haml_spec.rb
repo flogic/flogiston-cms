@@ -62,6 +62,77 @@ describe 'admin/pages/edit' do
       end
     end
 
+     it 'should have an input for the page template' do
+      do_render
+      response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+        with_tag('select[name=?]', 'page[template_id]')
+      end
+    end
+
+    describe 'page template input' do
+      describe 'when templates exist' do
+        before do
+          3.times { Template.generate! }
+          @templates = Template.all
+        end
+
+        it 'should have a blank placeholder option' do
+          do_render
+          response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+            with_tag('select[name=?]', 'page[template_id]') do
+              with_tag('option[value=?]', '', '')
+            end
+          end
+        end
+
+        it 'should have an option for every template' do
+          do_render
+          response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+            with_tag('select[name=?]', 'page[template_id]') do
+              @templates.each do |template|
+                with_tag('option[value=?]', template.id.to_s, template.handle)
+              end
+            end
+          end
+        end
+
+        it 'should have a selected option for the current page associated template' do
+          @page.update_attributes!(:template => @templates[1])
+          do_render
+          response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+            with_tag('select[name=?]', 'page[template_id]') do
+              with_tag('option[value=?][selected]', @page.template.id.to_s)
+            end
+          end
+        end
+
+        it 'should select the placeholder option if the page has no associated template' do
+          @page.update_attributes!(:template => nil)
+          do_render
+          response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+            with_tag('select[name=?]', 'page[template_id]') do
+              with_tag('option[value=?][selected]', '')
+            end
+          end
+        end
+      end
+
+      describe 'when no templates exist' do
+        before do
+          Template.delete_all
+        end
+
+        it 'should have no options' do
+          do_render
+          response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+            with_tag('select[name=?]', 'page[template_id]') do
+              without_tag('option')
+            end
+          end
+        end
+      end
+    end
+
     it 'should have an input for the page contents' do
       do_render
       response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do

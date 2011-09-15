@@ -22,4 +22,34 @@ describe AdminHelper do
       helper.admin_sections.should include('layouts')
     end
   end
+
+  it 'should provide a list of template options' do
+    helper.should respond_to(:template_options)
+  end
+
+  describe 'template options' do
+    describe 'when there are no templates' do
+      before do
+        Template.delete_all
+      end
+
+      it 'should return the empty list' do
+        helper.template_options.should == []
+      end
+    end
+
+    describe 'when there are templates' do
+      before do
+        3.times { Template.generate! }
+        @templates = Template.all
+      end
+
+      it 'should return an array of handle/id pairs for the existing templates, with a blank placeholder at the start' do
+        expected = @templates.collect { |t|  [t.handle, t.id] }
+        expected.unshift([])
+
+        helper.template_options.should == expected
+      end
+    end
+  end
 end
