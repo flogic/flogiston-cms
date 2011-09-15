@@ -35,6 +35,17 @@ describe Page do
       @page.save!
       @page.reload.contents.should == 'Test Contents'
     end
+
+    it 'should have values' do
+      @page.should respond_to(:values)
+    end
+
+    it 'should allow setting and retrieving the values as a hash' do
+      data = { 'title' => 'test title', 'color' => 'blue' }
+      @page.values = data
+      @page.save!
+      @page.reload.values.should == data
+    end
   end
 
   describe 'validations' do
