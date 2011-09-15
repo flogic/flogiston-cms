@@ -29,7 +29,8 @@ class Flogiston::Page < Flogiston::AbstractPage
     "/#{handle}"
   end
   
-  def full_contents(replacements = {})
+  def full_contents
+    replacements = {}
     expanded = self.class.expand(replacements, contents)
     return expanded unless template
 
