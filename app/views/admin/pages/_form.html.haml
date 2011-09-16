@@ -16,6 +16,13 @@
     %label{:for => 'page_template_id'}
       Template:
     = f.select(:template_id, template_options)
+  - f.fields_for :values do |ff|
+    - page.values ||= {}
+    - page.template_replacements.each do |r|
+      .field
+        %label{:for => "page_values_#{r}"}
+          == #{r}:
+        = ff.text_field r.to_sym, :value => page.values[r]
   .field
     %label{:for => 'page_contents'}
       Contents:

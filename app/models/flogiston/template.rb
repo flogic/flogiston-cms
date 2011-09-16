@@ -7,4 +7,9 @@ class Flogiston::Template < Flogiston::AbstractPage
   def full_contents(replacements = {})
     self.class.expand(replacements, contents)
   end
+
+  def replacements
+    return [] unless contents
+    contents.scan(/\{\{\s*(\w+)\s*\}\}/).flatten - %w[contents]
+  end
 end

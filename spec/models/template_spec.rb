@@ -160,4 +160,30 @@ describe Template do
       end
     end
   end
+
+  it 'should provide a list of replacements' do
+    @template.should respond_to(:replacements)
+  end
+
+  describe 'providing a list of replacements' do
+    it 'should be the empty list if the template has no placeholders' do
+      @template = Template.generate!(:contents => 'simple stuff')
+      @template.replacements.should == []
+    end
+
+    it "should be the empty list if the only placeholder is 'contents'" do
+      @template = Template.generate!(:contents => 'simple {{ contents }} wrapper')
+      @template.replacements.should == []
+    end
+
+    it "should return a list of all the placeholders except 'contents'" do
+      @template = Template.generate!(:contents => 'a little {{ more }} complicated {{ contents }} wrapper with {{ things }} here')
+      @template.replacements.should == %w[more things]
+    end
+
+    it 'should be the empty list if the template has no content' do
+      @template = Template.generate!(:contents => nil)
+      @template.replacements.should == []
+    end
+  end
 end
