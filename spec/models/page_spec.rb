@@ -86,6 +86,34 @@ describe Page do
       Page.find(@page.id).template.should == template
     end
   end
+
+  describe 'delegation' do
+    it 'should have template replacements' do
+      Page.new.should respond_to(:template_replacements)
+    end
+
+    describe 'template replacements' do
+      before do
+        @page = Page.generate!(:template => Template.generate!)
+      end
+
+      it 'should forward the call to the page template' do
+        @page.template.expects(:replacements)
+        @page.template_replacements
+      end
+
+      it 'should return the value from the template' do
+        value = 'smee'
+        @page.template.stubs(:replacements).returns(value)
+        @page.template_replacements.should == value
+      end
+
+      it 'should return the empty list if the page has no template' do
+        @page.update_attributes!(:template => nil)
+        @page.template_replacements.should == []
+      end
+    end
+  end
   
   describe 'as a class' do
     it 'should be able to check if a given handle is valid' do

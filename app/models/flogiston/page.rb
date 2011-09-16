@@ -37,4 +37,9 @@ class Flogiston::Page < Flogiston::AbstractPage
     replacements.merge!('contents' => expanded)
     template.full_contents(replacements)
   end
+
+  def template_replacements
+    return [] unless template
+    template.replacements
+  end
 end
