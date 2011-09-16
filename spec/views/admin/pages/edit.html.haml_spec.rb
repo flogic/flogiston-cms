@@ -133,6 +133,62 @@ describe 'admin/pages/edit' do
       end
     end
 
+    describe 'when the page has a template' do
+      before do
+        @page.update_attributes!(:template => Template.generate!)
+      end
+
+      describe 'and the template has replacements' do
+        before do
+          @replacements = %w[some stuff here]
+          @page.template.stubs(:replacements).returns(@replacements)
+        end
+
+        it 'should have a value input for every replacement' do
+          do_render
+          response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+            @replacements.each do |r|
+              with_tag('input[name=?]', "page[values][#{r}]")
+            end
+          end
+        end
+
+        it 'should include the replacement value if set' do
+          @page.values = { 'stuff' => 'blah' }
+          do_render
+          response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+            with_tag('input[name=?][value=?]', 'page[values][stuff]', 'blah')
+          end
+        end
+      end
+
+      describe 'and the template has no replacements' do
+        before do
+          @page.template.stubs(:replacements).returns([])
+        end
+
+        it 'should have no replacement value inputs' do
+          do_render
+          response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+            without_tag('input[name^=?]', 'page[values]')
+          end
+        end
+      end
+    end
+
+    describe 'when the page has no template' do
+      before do
+        @page.update_attributes!(:template => nil)
+      end
+
+      it 'should have no replacement value inputs' do
+        do_render
+        response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+          without_tag('input[name^=?]', 'page[values]')
+        end
+      end
+    end
+
     it 'should have an input for the page contents' do
       do_render
       response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
