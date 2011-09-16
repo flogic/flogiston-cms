@@ -2,6 +2,8 @@ class Flogiston::Page < Flogiston::AbstractPage
   belongs_to :template
 
   validates_uniqueness_of :handle
+
+  serialize :values, Hash
   
   def validate
     unless valid_handle?
@@ -27,10 +29,12 @@ class Flogiston::Page < Flogiston::AbstractPage
     "/#{handle}"
   end
   
-  def full_contents(replacements = {})
-    expanded = self.class.expand(replacements, contents)
+  def full_contents
+    expanded = self.class.expand({}, contents)
     return expanded unless template
 
-    template.full_contents(replacements.merge('contents' => expanded))
+    replacements = values || {}
+    replacements.merge!('contents' => expanded)
+    template.full_contents(replacements)
   end
 end
