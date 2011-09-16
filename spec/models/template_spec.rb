@@ -180,5 +180,10 @@ describe Template do
       @template = Template.generate!(:contents => 'a little {{ more }} complicated {{ contents }} wrapper with {{ things }} here')
       @template.replacements.should == %w[more things]
     end
+
+    it 'should be the empty list if the template has no content' do
+      @template = Template.generate!(:contents => nil)
+      @template.replacements.should == []
+    end
   end
 end
