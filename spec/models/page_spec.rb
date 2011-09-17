@@ -26,6 +26,16 @@ describe Page do
       @page.reload.handle.should == 'test_handle'
     end
 
+    it 'should have format' do
+      @page.should respond_to(:format)
+    end
+
+    it 'should allow setting and retrieving the format' do
+      @page.format = 'markdown'
+      @page.save!
+      @page.reload.format.should == 'markdown'
+    end
+
     it 'should have contents' do
       @page.should respond_to(:contents)
     end
