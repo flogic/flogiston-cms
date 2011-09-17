@@ -25,6 +25,16 @@ describe Layout do
       @layout.save!
       @layout.reload.contents.should == 'Test Contents'
     end
+
+    it 'should have format' do
+      @layout.should respond_to(:format)
+    end
+
+    it 'should allow setting and retrieving the format' do
+      @layout.format = 'haml'
+      @layout.save!
+      @layout.reload.format.should == 'haml'
+    end
   end
 
   describe 'validations' do
