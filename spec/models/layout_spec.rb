@@ -227,6 +227,20 @@ describe Layout do
         @layout.render_template(@view, @locals)
         @layout_obj.recompile?.should be_true
       end
+
+      it "should set the ActionView::Template object's extension to the layout's format" do
+        format = 'haml'
+        @layout.format = format
+        @layout.render_template(@view, @locals)
+        @layout_obj.extension.should == format
+      end
+
+      it "should set the ActionView::Template object's extension to nil if the layout has no set format" do
+        format = nil
+        @layout.format = format
+        @layout.render_template(@view, @locals)
+        @layout_obj.extension.should == format
+      end
       
       it 'should make the ActionView::Template object render the template with the given view and local assigns' do
         @layout_obj.expects(:render_template).with(@view, @locals)
