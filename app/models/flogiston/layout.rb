@@ -21,6 +21,10 @@ class Flogiston::Layout < Flogiston::AbstractPage
       def recompile?
         true
       end
+
+      def extension
+        #{format.inspect}
+      end
     eval_string
     renderer.render_template(view, local_assigns)
   end

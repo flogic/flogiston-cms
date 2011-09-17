@@ -9,4 +9,11 @@ module AdminHelper
     options.unshift([]) unless options.blank?
     options
   end
+
+  def layout_format_options
+    [
+      %w[HAML haml],
+      %w[ERB  erb]
+    ]
+  end
 end

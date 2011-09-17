@@ -32,6 +32,36 @@ describe 'admin/layouts/new' do
       end
     end
 
+    it 'should have an input for the layout format' do
+      do_render
+      response.should have_tag('form[id=?]', 'new_layout') do
+        with_tag('select[name=?]', 'layout[format]')
+      end
+    end
+
+    describe 'layout format input' do
+      before do
+        @formats = [ %w[lab1 val1], %w[blah bang] ]
+        template.stubs(:layout_format_options).returns(@formats)
+      end
+
+      it 'should get the layout format options' do
+        template.expects(:layout_format_options).returns(@formats)
+        do_render
+      end
+
+      it 'should include an option for every format' do
+        do_render
+        response.should have_tag('form[id=?]', 'new_layout') do
+          with_tag('select[name=?]', 'layout[format]') do
+            @formats.each do |label, value|
+              with_tag('option[value=?]', value, label)
+            end
+          end
+        end
+      end
+    end
+
     it 'should have an input for the layout contents' do
       do_render
       response.should have_tag('form[id=?]', 'new_layout') do

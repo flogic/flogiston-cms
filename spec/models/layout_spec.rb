@@ -25,6 +25,16 @@ describe Layout do
       @layout.save!
       @layout.reload.contents.should == 'Test Contents'
     end
+
+    it 'should have format' do
+      @layout.should respond_to(:format)
+    end
+
+    it 'should allow setting and retrieving the format' do
+      @layout.format = 'haml'
+      @layout.save!
+      @layout.reload.format.should == 'haml'
+    end
   end
 
   describe 'validations' do
@@ -216,6 +226,20 @@ describe Layout do
       it "should set the ActionView::Template object to recompile" do
         @layout.render_template(@view, @locals)
         @layout_obj.recompile?.should be_true
+      end
+
+      it "should set the ActionView::Template object's extension to the layout's format" do
+        format = 'haml'
+        @layout.format = format
+        @layout.render_template(@view, @locals)
+        @layout_obj.extension.should == format
+      end
+
+      it "should set the ActionView::Template object's extension to nil if the layout has no set format" do
+        format = nil
+        @layout.format = format
+        @layout.render_template(@view, @locals)
+        @layout_obj.extension.should == format
       end
       
       it 'should make the ActionView::Template object render the template with the given view and local assigns' do
