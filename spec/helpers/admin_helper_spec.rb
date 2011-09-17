@@ -52,4 +52,16 @@ describe AdminHelper do
       end
     end
   end
+
+  it 'should provide a list of layout format options' do
+    helper.should respond_to(:layout_format_options)
+  end
+
+  describe 'layout format options' do
+    it 'should return an array of label/name pairs for HAML and ERB' do
+      expected = [ %w[HAML haml], %w[ERB erb] ]
+
+      helper.layout_format_options.should == expected
+    end
+  end
 end
