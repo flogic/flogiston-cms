@@ -47,33 +47,4 @@ class Flogiston::Page < Flogiston::AbstractPage
     expanded = self.class.expand({}, contents)
     formatter.process(expanded)
   end
-
-  def formatter
-    case format
-    when 'raw'
-      Formatter::Raw
-    when 'markdown'
-      Formatter::Markdown
-    else
-      Formatter::Markdown
-    end
-  end
-
-  module Formatter
-    module Markdown
-      class << self
-        def process(text)
-          RDiscount.new(text).to_html
-        end
-      end
-    end
-
-    module Raw
-      class << self
-        def process(text)
-          text
-        end
-      end
-    end
-  end
 end
