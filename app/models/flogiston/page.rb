@@ -30,7 +30,7 @@ class Flogiston::Page < Flogiston::AbstractPage
   end
   
   def full_contents
-    expanded = self.class.expand({}, contents)
+    expanded = formatted
     return expanded unless template
 
     replacements = values || {}
@@ -41,5 +41,39 @@ class Flogiston::Page < Flogiston::AbstractPage
   def template_replacements
     return [] unless template
     template.replacements
+  end
+
+  def formatted
+    expanded = self.class.expand({}, contents)
+    formatter.process(expanded)
+  end
+
+  def formatter
+    case format
+    when 'raw'
+      Formatter::Raw
+    when 'markdown'
+      Formatter::Markdown
+    else
+      Formatter::Markdown
+    end
+  end
+
+  module Formatter
+    module Markdown
+      class << self
+        def process(text)
+          RDiscount.new(text).to_html
+        end
+      end
+    end
+
+    module Raw
+      class << self
+        def process(text)
+          text
+        end
+      end
+    end
   end
 end
