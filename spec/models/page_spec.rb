@@ -302,43 +302,56 @@ describe Page do
   end
 
   describe 'providing formatted contents' do
-    before do
-      @contents = 'expanded page contents'
-      Page.stubs(:expand).returns(@contents)
+    describe 'when the page has content' do
+      before do
+        @page.contents = 'testing'
 
-      @formatted = 'formatted page contents'
-      @formatter = Object.new
-      @formatter.stubs(:process).returns(@formatted)
+        @formatted = 'formatted page contents'
+        @formatter = Object.new
+        @formatter.stubs(:process).returns(@formatted)
 
-      @page.stubs(:formatter).returns(@formatter)
+        @page.stubs(:formatter).returns(@formatter)
+
+        @expanded = 'expanded page contents'
+        Page.stubs(:expand).returns(@expanded)
+      end
+
+      it 'should get the page formatter' do
+        @page.expects(:formatter).returns(@formatter)
+        @page.formatted
+      end
+
+      it 'should pass the page contents to the formatter for formatting' do
+        @page.contents = 'some contents'
+        @formatter.expects(:process).with(@page.contents).returns(@formatted)
+        @page.formatted
+      end
+
+      it 'should expand the formatted page contents' do
+        Page.expects(:expand).with({}, @formatted).returns(@expanded)
+        @page.formatted
+      end
+
+      it 'should pass no replacements to expansion even if the page holds values' do
+        @page.values = { 'title' => 'test title', 'color' => 'blue' }
+        Page.expects(:expand).with({}, @formatted).returns(@expanded)
+        @page.formatted
+      end
+
+      it 'should return the results of expanding the formatted page contents' do
+        Page.stubs(:expand).returns(@expanded)
+        @page.formatted.should == @expanded
+      end
     end
 
-    it 'should expand the page contents' do
-      @page.contents = 'some contents'
-      Page.expects(:expand).with({}, @page.contents).returns(@contents)
-      @page.formatted
-    end
+    describe 'when the page has no content' do
+      before do
+        @page.contents = nil
+      end
 
-    it 'should pass no replacements to expansion even if the page holds values' do
-      @page.values = { 'title' => 'test title', 'color' => 'blue' }
-      @page.contents = 'some contents'
-      Page.expects(:expand).with({}, @page.contents).returns(@contents)
-      @page.formatted
-    end
-
-    it 'should get the page formatter' do
-      @page.expects(:formatter).returns(@formatter)
-      @page.formatted
-    end
-
-    it 'should pass the expanded page contents to the formatter for formatting' do
-      @formatter.expects(:process).with(@contents)
-      @page.formatted
-    end
-
-    it 'should return the results of formatting the expanded page contents' do
-      @formatter.stubs(:process).returns(@formatted)
-      @page.formatted.should == @formatted
+      it 'should be the empty string' do
+        @page.formatted.should == ''
+      end
     end
   end
 

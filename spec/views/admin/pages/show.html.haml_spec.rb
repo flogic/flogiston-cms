@@ -55,6 +55,18 @@ describe 'admin/pages/show' do
     response.should have_tag('li', :text => /something/)
   end
 
+  it 'should allow unformatted snippet contents within formatted page contents' do
+    @page.format = 'markdown'
+    Snippet.generate!(:handle => 'testsnip', :format => 'raw', :contents => "
+ 1. something
+ 1. nothing
+    ")
+    @page.contents += "\n{{ testsnip }}\n"
+
+    do_render
+    response.should have_text(/1\. nothing/)
+  end
+
   it 'should include an edit link' do
     do_render
     response.should have_tag('a[href=?]', edit_admin_page_path(@page))
