@@ -151,10 +151,53 @@ describe 'admin/pages/new' do
       end
     end
 
-    it 'should have an input for the page contents' do
+    it 'should have an input for the page format' do
       do_render
       response.should have_tag('form[id=?]', 'new_page') do
-        with_tag('textarea[name=?]', 'page[contents]')
+        with_tag('select[name=?]', 'page[format]')
+      end
+    end
+
+    describe 'page format input' do
+      before do
+        @formats = [ %w[lab1 val1], %w[dee-FAULT markdown], %w[blah bang] ]
+        template.stubs(:page_format_options).returns(@formats)
+      end
+
+      it 'should get the layout format options' do
+        template.expects(:page_format_options).returns(@formats)
+        do_render
+      end
+
+      it 'should include an option for every format' do
+        do_render
+        response.should have_tag('form[id=?]', 'new_page') do
+          with_tag('select[name=?]', 'page[format]') do
+            @formats.each do |label, value|
+              with_tag('option[value=?]', value, label)
+            end
+          end
+        end
+      end
+
+      it 'should select the option for the page format' do
+        @page.format = @formats.last.last
+        do_render
+        response.should have_tag('form[id=?]', 'new_page') do
+          with_tag('select[name=?]', 'page[format]') do
+            with_tag('option[value=?][selected]', @page.format)
+          end
+        end
+      end
+
+      it "should select the 'markdown' option if the page format is nil" do
+        @page.format = nil
+        do_render
+        response.should have_tag('form[id=?]', 'new_page') do
+          with_tag('select[name=?]', 'page[format]') do
+            with_tag('option[value=?][selected]', 'markdown')
+          end
+        end
       end
     end
 
