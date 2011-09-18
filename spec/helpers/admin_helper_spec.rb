@@ -64,4 +64,16 @@ describe AdminHelper do
       helper.layout_format_options.should == expected
     end
   end
+
+  it 'should provide a list of page format options' do
+    helper.should respond_to(:page_format_options)
+  end
+
+  describe 'page format options' do
+    it 'should return an array of label/name pairs for HAML and ERB' do
+      expected = [ %w[Markdown markdown], ['raw (unformatted)', 'raw'] ]
+
+      helper.page_format_options.should == expected
+    end
+  end
 end

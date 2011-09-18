@@ -16,4 +16,11 @@ module AdminHelper
       %w[ERB  erb]
     ]
   end
+
+  def page_format_options
+    [
+      %w[Markdown              markdown],
+        ['raw (unformatted)', 'raw']
+    ]
+  end
 end

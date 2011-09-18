@@ -26,6 +26,16 @@ describe Page do
       @page.reload.handle.should == 'test_handle'
     end
 
+    it 'should have format' do
+      @page.should respond_to(:format)
+    end
+
+    it 'should allow setting and retrieving the format' do
+      @page.format = 'markdown'
+      @page.save!
+      @page.reload.format.should == 'markdown'
+    end
+
     it 'should have contents' do
       @page.should respond_to(:contents)
     end
@@ -221,8 +231,8 @@ describe Page do
       before :each do
         @template = Template.generate!
         @page = Page.generate!(:template => @template)
-        @contents = "expanded page contents"
-        Page.stubs(:expand).returns(@contents)
+        @contents = "formatted page contents"
+        @page.stubs(:formatted).returns(@contents)
       end
 
       it "should get the template full contents with the page full contents specifed as the 'contents' replacement" do
@@ -273,55 +283,148 @@ describe Page do
         @page.update_attributes!(:template => nil)
       end
 
-      it 'should expand the page contents' do
+      it 'should format page contents' do
         @page.contents = 'some contents'
-        Page.expects(:expand).with({}, @page.contents).returns(@contents)
+        @page.expects(:formatted).returns(@contents)
         @page.full_contents
       end
 
-      it 'should pass no replacements to expansion even if the page holds values' do
-        @page.values = { 'title' => 'test title', 'color' => 'blue' }
-        @page.contents = 'some contents'
-        Page.expects(:expand).with({}, @page.contents).returns(@contents)
-        @page.full_contents
-      end
-
-      it 'should return the results of expanding page contents' do
-        @contents = "expanded page contents"
-        Page.stubs(:expand).returns(@contents)
+      it 'should return the results of formatting page contents' do
+        @contents = 'formatted page contents'
+        @page.stubs(:formatted).returns(@contents)
         @page.full_contents.should == @contents
       end
     end
+  end
 
-    describe 'expanding contents' do
-      it 'should be the page contents in simple cases' do
-        contents = 'abba dabba'
-        @page.contents = contents
-        @page.full_contents.should == contents
+  it 'should provide formatted contents' do
+    @page.should respond_to(:formatted)
+  end
+
+  describe 'providing formatted contents' do
+    before do
+      @contents = 'expanded page contents'
+      Page.stubs(:expand).returns(@contents)
+
+      @formatted = 'formatted page contents'
+      @formatter = Object.new
+      @formatter.stubs(:process).returns(@formatted)
+
+      @page.stubs(:formatter).returns(@formatter)
+    end
+
+    it 'should expand the page contents' do
+      @page.contents = 'some contents'
+      Page.expects(:expand).with({}, @page.contents).returns(@contents)
+      @page.formatted
+    end
+
+    it 'should pass no replacements to expansion even if the page holds values' do
+      @page.values = { 'title' => 'test title', 'color' => 'blue' }
+      @page.contents = 'some contents'
+      Page.expects(:expand).with({}, @page.contents).returns(@contents)
+      @page.formatted
+    end
+
+    it 'should get the page formatter' do
+      @page.expects(:formatter).returns(@formatter)
+      @page.formatted
+    end
+
+    it 'should pass the expanded page contents to the formatter for formatting' do
+      @formatter.expects(:process).with(@contents)
+      @page.formatted
+    end
+
+    it 'should return the results of formatting the expanded page contents' do
+      @formatter.stubs(:process).returns(@formatted)
+      @page.formatted.should == @formatted
+    end
+  end
+
+  it 'should provide a formatter' do
+    @page.should respond_to(:formatter)
+  end
+
+  describe 'providing a formatter' do
+    describe "when the format is 'markdown'" do
+      before do
+        @page.format = 'markdown'
       end
 
-      it 'should include the contents of any referenced snippet' do
-        snippet_handle = 'testsnip'
-        snippet_contents = 'blah blah blah'
-        Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
+      it 'should return an object that will format the input via markdown when processing' do
+        @contents = "
+ * whatever
+ * whatever else
+"
+        result = @page.formatter.process(@contents)
+        result.should match(Regexp.new(Regexp.escape('<li>whatever</li>')))
+      end
+    end
 
-        @page = Page.generate!(:contents => "big bag boom {{ #{snippet_handle} }} badaboom")
-        @page.full_contents.should == "big bag boom #{snippet_contents} badaboom"
+    describe "when the format is 'raw'" do
+      before do
+        @page.format = 'raw'
       end
 
-      it 'should handle multiple snippet references' do
-        snippets = []
-        snippets.push Snippet.generate!(:handle => 'testsnip1', :contents => 'blah blah blah')
-        snippets.push Snippet.generate!(:handle => 'testsnip2', :contents => 'bing bang bong')
+      it 'should return an object that will return the input verbatim when processing' do
+        @contents = "
+ * whatever
+ * whatever else
+"
+        @page.formatter.process(@contents).should == @contents
+      end
+    end
 
-        @page = Page.generate!(:contents => "big bag {{#{snippets[0].handle}}} boom {{ #{snippets[1].handle} }} badaboom")
-        @page.full_contents.should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
+    describe 'when the format is not set' do
+      before do
+        @page.format = nil
       end
 
-      it 'should replace an unknown snippet reference with the empty string' do
-        @page = Page.generate!(:contents => "big bag boom {{ who_knows }} badaboom")
-        @page.full_contents.should == "big bag boom  badaboom"
+      it 'should format as markdown' do
+        @contents = "
+ * whatever
+ * whatever else
+"
+        result = @page.formatter.process(@contents)
+        result.should match(Regexp.new(Regexp.escape('<li>whatever</li>')))
       end
+    end
+  end
+
+  describe 'expanding contents' do
+    it 'should be the contents in simple cases' do
+      contents = 'abba dabba'
+      Page.expand({}, contents) == contents
+    end
+
+    it 'should include the contents of any referenced snippet' do
+      snippet_handle = 'testsnip'
+      snippet_contents = 'blah blah blah'
+      Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
+
+      contents = "big bag boom {{ #{snippet_handle} }} badaboom"
+      Page.expand({}, contents).should == "big bag boom #{snippet_contents} badaboom"
+    end
+
+    it 'should handle multiple snippet references' do
+      snippets = []
+      snippets.push Snippet.generate!(:handle => 'testsnip1', :contents => 'blah blah blah')
+      snippets.push Snippet.generate!(:handle => 'testsnip2', :contents => 'bing bang bong')
+
+      contents = "big bag {{#{snippets[0].handle}}} boom {{ #{snippets[1].handle} }} badaboom"
+      Page.expand({}, contents).should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
+    end
+
+    it 'should replace an unknown snippet reference with the empty string' do
+      contents = "big bag boom {{ who_knows }} badaboom"
+      Page.expand({}, contents).should == "big bag boom  badaboom"
+    end
+
+    it 'should format included snippet contents' do
+      snippet = Snippet.generate!(:handle => 'testsnip', :contents => 'blah *blah* blah', :format => 'markdown')
+      contents = "big bag boom {{ #{snippet.handle} }} badaboom"
+      Page.expand({}, contents).should == "big bag boom #{snippet.full_contents} badaboom"
     end
   end
 end

@@ -66,7 +66,7 @@ describe Layout do
     end
     
     it 'should not require a hash of replacements' do
-      lambda { @layout.full_contents }.should_not raise_error(ArgumentError)      
+      lambda { @layout.full_contents }.should_not raise_error(ArgumentError)
     end
     
     describe 'when no replacements are specified' do
@@ -97,6 +97,12 @@ describe Layout do
       it 'should replace an unknown snippet reference with the empty string' do
         @layout = Layout.generate!(:contents => "big bag boom {{ who_knows }} badaboom")
         @layout.full_contents.should == "big bag boom  badaboom"
+      end
+
+      it 'should format included snippet contents' do
+        snippet = Snippet.generate!(:handle => 'testsnip', :contents => 'blah *blah* blah', :format => 'markdown')
+        @layout = Layout.generate!(:contents => contents = "big bag boom {{ #{snippet.handle} }} badaboom")
+        @layout.full_contents.should == "big bag boom #{snippet.full_contents} badaboom"
       end
     end
     

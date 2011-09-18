@@ -20,13 +20,24 @@ describe 'admin/snippets/show' do
     response.should have_text(Regexp.new(Regexp.escape(@snippet.contents)))
   end
 
-  it 'should format the snippet contents with markdown' do
+  it 'should format the snippet contents according to snippet format' do
+    @snippet.format = 'markdown'
     @snippet.contents = "
  * whatever
  * whatever else
 "
     do_render
     response.should have_tag('li', :text => /whatever/)
+  end
+
+  it 'should leave snippet contents unformatted if snippet format indicates it' do
+    @snippet.format = 'raw'
+    @snippet.contents = "
+ * whatever
+ * whatever else
+"
+    do_render
+    response.should have_text(/\* whatever/)
   end
 
   it 'should include an edit link' do

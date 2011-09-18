@@ -1,4 +1,4 @@
 = @snippet.handle
 = link_to 'edit', edit_admin_snippet_path(@snippet)
 
-= format_text(@snippet.contents)
+= render :partial => 'pages/show', :locals => { :page => @snippet }
