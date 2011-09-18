@@ -47,6 +47,56 @@ describe 'admin/snippets/edit' do
       end
     end
 
+    it 'should have an input for the snippet format' do
+      do_render
+      response.should have_tag('form[id=?]', "edit_snippet_#{@snippet.id}") do
+        with_tag('select[name=?]', 'snippet[format]')
+      end
+    end
+
+    describe 'snippet format input' do
+      before do
+        @formats = [ %w[lab1 val1], %w[dee-FAULT raw], %w[blah bang] ]
+        template.stubs(:page_format_options).returns(@formats)
+      end
+
+      it 'should get the layout format options' do
+        template.expects(:page_format_options).returns(@formats)
+        do_render
+      end
+
+      it 'should include an option for every format' do
+        do_render
+        response.should have_tag('form[id=?]', "edit_snippet_#{@snippet.id}") do
+          with_tag('select[name=?]', 'snippet[format]') do
+            @formats.each do |label, value|
+              with_tag('option[value=?]', value, label)
+            end
+          end
+        end
+      end
+
+      it 'should select the option for the snippet format' do
+        @snippet.format = @formats.last.last
+        do_render
+        response.should have_tag('form[id=?]', "edit_snippet_#{@snippet.id}") do
+          with_tag('select[name=?]', 'snippet[format]') do
+            with_tag('option[value=?][selected]', @snippet.format)
+          end
+        end
+      end
+
+      it "should select the 'raw' option if the snippet format is nil" do
+        @snippet.format = nil
+        do_render
+        response.should have_tag('form[id=?]', "edit_snippet_#{@snippet.id}") do
+          with_tag('select[name=?]', 'snippet[format]') do
+            with_tag('option[value=?][selected]', 'raw')
+          end
+        end
+      end
+    end
+
     it 'should have an input for the snippet contents' do
       do_render
       response.should have_tag('form[id=?]', "edit_snippet_#{@snippet.id}") do
