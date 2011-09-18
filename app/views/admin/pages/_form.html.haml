@@ -26,7 +26,7 @@
   .field
     %label{:for => 'page_format'}
       Format:
-    - page.format ||= 'markdown'
+    - page.format ||= page.default_format
     = f.select(:format, page_format_options)
   .field
     %label{:for => 'page_contents'}

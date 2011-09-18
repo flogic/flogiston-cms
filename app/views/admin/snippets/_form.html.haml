@@ -11,7 +11,7 @@
   .field
     %label{:for => 'snippet_format'}
       Format:
-    - snippet.format ||= 'raw'
+    - snippet.format ||= snippet.default_format
     = f.select(:format, page_format_options)
   .field
     %label{:for => 'snippet_contents'}
