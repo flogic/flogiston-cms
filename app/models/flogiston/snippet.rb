@@ -7,4 +7,8 @@ class Flogiston::Snippet < Flogiston::AbstractPage
   def formatted
     formatter.process(contents)
   end
+
+  def default_format
+    'raw'
+  end
 end

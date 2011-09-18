@@ -149,13 +149,12 @@ describe Snippet do
         @snippet.format = nil
       end
 
-      it 'should format as markdown' do
+      it 'should format as raw' do
         @contents = "
  * whatever
  * whatever else
 "
-        result = @snippet.formatter.process(@contents)
-        result.should match(Regexp.new(Regexp.escape('<li>whatever</li>')))
+        @snippet.formatter.process(@contents).should == @contents
       end
     end
   end

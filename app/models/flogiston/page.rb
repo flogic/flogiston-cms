@@ -47,4 +47,8 @@ class Flogiston::Page < Flogiston::AbstractPage
     expanded = self.class.expand({}, contents)
     formatter.process(expanded)
   end
+
+  def default_format
+    'markdown'
+  end
 end

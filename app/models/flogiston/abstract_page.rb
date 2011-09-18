@@ -15,13 +15,18 @@ class Flogiston::AbstractPage < ActiveRecord::Base
     end
   end
 
+  # Kernel#format is troublesome
+  def format
+    attributes['format']
+  end
+
   def formatter
-    case format
+    fmt = format || default_format
+
+    case fmt
     when 'raw'
       Formatter::Raw
     when 'markdown'
-      Formatter::Markdown
-    else
       Formatter::Markdown
     end
   end
