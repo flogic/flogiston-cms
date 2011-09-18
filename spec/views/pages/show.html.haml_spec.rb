@@ -33,15 +33,27 @@ describe 'pages/show' do
     do_render
     response.should have_text(/\* whatever/)
   end
-  
+
   it 'should include referenced snippets' do
     Snippet.generate!(:handle => 'testsnip', :format => 'markdown', :contents => "
  1. something
  1. nothing
     ")
     @page.contents += "\n{{ testsnip }}\n"
- 
+
     do_render
     response.should have_tag('li', :text => /something/)
+  end
+
+  it 'should allow unformatted snippet contents within formatted page contents' do
+    @page.format = 'markdown'
+    Snippet.generate!(:handle => 'testsnip', :format => 'raw', :contents => "
+ 1. something
+ 1. nothing
+    ")
+    @page.contents += "\n{{ testsnip }}\n"
+
+    do_render
+    response.should have_text(/1\. nothing/)
   end
 end
