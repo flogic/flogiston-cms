@@ -420,5 +420,11 @@ describe Page do
       contents = "big bag boom {{ who_knows }} badaboom"
       Page.expand({}, contents).should == "big bag boom  badaboom"
     end
+
+    it 'should format included snippet contents' do
+      snippet = Snippet.generate!(:handle => 'testsnip', :contents => 'blah *blah* blah', :format => 'markdown')
+      contents = "big bag boom {{ #{snippet.handle} }} badaboom"
+      Page.expand({}, contents).should == "big bag boom #{snippet.full_contents} badaboom"
+    end
   end
 end

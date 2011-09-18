@@ -68,7 +68,7 @@ describe Template do
     end
     
     it 'should not require a hash of replacements' do
-      lambda { @template.full_contents }.should_not raise_error(ArgumentError)      
+      lambda { @template.full_contents }.should_not raise_error(ArgumentError)
     end
     
     describe 'when no replacements are specified' do
@@ -99,6 +99,12 @@ describe Template do
       it 'should replace an unknown snippet reference with the empty string' do
         @template = Template.generate!(:contents => "big bag boom {{ who_knows }} badaboom")
         @template.full_contents.should == "big bag boom  badaboom"
+      end
+
+      it 'should format included snippet contents' do
+        snippet = Snippet.generate!(:handle => 'testsnip', :contents => 'blah *blah* blah', :format => 'markdown')
+        @template = Template.generate!(:contents => contents = "big bag boom {{ #{snippet.handle} }} badaboom")
+        @template.full_contents.should == "big bag boom #{snippet.full_contents} badaboom"
       end
     end
     

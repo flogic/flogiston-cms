@@ -10,7 +10,7 @@ class Flogiston::AbstractPage < ActiveRecord::Base
       text.gsub(/\{\{\s*\w+\s*\}\}/) do |pattern|
         handle = pattern.match(/\w+/)[0]
         snippet = Snippet.find_by_handle(handle)
-        snippet ? snippet.contents : (replacements.has_key?(handle) ? replacements[handle] : '')
+        snippet ? snippet.full_contents : (replacements.has_key?(handle) ? replacements[handle] : '')
       end
     end
   end
