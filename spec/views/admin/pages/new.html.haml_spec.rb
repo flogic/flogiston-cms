@@ -213,7 +213,8 @@ describe 'admin/pages/new' do
   
   describe 'preview area' do
     before :each do
-        @page.contents = "
+      @page.format = 'markdown'
+      @page.contents = "
  * whatever
  * whatever else
 "
@@ -224,16 +225,21 @@ describe 'admin/pages/new' do
       response.should have_tag('div[id=?]', 'preview')
     end
 
-    
-    it 'should include the page contents formatted with markdown' do
+    it 'should include the page contents formatted according to page format' do
       do_render
       response.should have_tag('div[id=?]', 'preview') do
         with_tag('li', :text => /whatever/)
       end
     end
+
+    it 'should leave page contents unformatted if page format indicates it' do
+      @page.format = 'raw'
+      do_render
+      response.should have_tag('div[id=?]', 'preview', /\* whatever/)
+    end
     
     it 'should include referenced snippets' do
-      Snippet.generate!(:handle => 'testsnip', :contents => "
+      Snippet.generate!(:handle => 'testsnip', :format => 'markdown', :contents => "
  1. something
  1. nothing
       ")

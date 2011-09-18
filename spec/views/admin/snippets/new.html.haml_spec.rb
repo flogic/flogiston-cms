@@ -92,7 +92,8 @@ describe 'admin/snippets/new' do
   
   describe 'preview area' do
     before :each do
-        @snippet.contents = "
+      @snippet.format = 'markdown'
+      @snippet.contents = "
  * whatever
  * whatever else
 "
@@ -103,14 +104,19 @@ describe 'admin/snippets/new' do
       response.should have_tag('div[id=?]', 'preview')
     end
 
-    
-    it 'should include the snippet contents formatted with markdown' do
+    it 'should include the snippet contents formatted according to snippet format' do
       do_render
       response.should have_tag('div[id=?]', 'preview') do
         with_tag('li', :text => /whatever/)
       end
     end
-    
+
+    it 'should leave snippet contents unformatted if snippet format indicates it' do
+      @snippet.format = 'raw'
+      do_render
+      response.should have_tag('div[id=?]', 'preview', /\* whatever/)
+    end
+
     it 'should not exist if the snippet contents are the empty string' do
       @snippet.contents = ''
       do_render

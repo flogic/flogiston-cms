@@ -1,3 +1,5 @@
 = @page.title
 = @page.handle
-= format_text(@page.contents)
+= link_to 'edit', edit_admin_page_path(@page)
+
+= render :partial => 'pages/show', :locals => { :page => @page }
