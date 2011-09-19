@@ -231,12 +231,12 @@ describe Page do
       before :each do
         @template = Template.generate!
         @page = Page.generate!(:template => @template)
-        @contents = "formatted page contents"
-        @page.stubs(:formatted).returns(@contents)
+        @formatted = "formatted page contents"
+        @page.stubs(:formatted).returns(@formatted)
       end
 
-      it "should get the template full contents with the page full contents specifed as the 'contents' replacement" do
-        @template.expects(:full_contents).with({ 'contents' => @contents })
+      it "should get the template full contents with the page formatted contents specifed as the 'contents' replacement" do
+        @template.expects(:full_contents).with({ 'contents' => @formatted })
         @page.full_contents
       end
 
@@ -252,15 +252,15 @@ describe Page do
           @page.values = @values
         end
 
-        it 'should pass the values along with the page full contents to the template' do
-          expected = { 'title' => 'test title', 'color' => 'blue', 'contents' => @contents }
+        it 'should pass the values along with the page formatted contents to the template' do
+          expected = { 'title' => 'test title', 'color' => 'blue', 'contents' => @formatted }
           @template.expects(:full_contents).with(expected)
           @page.full_contents
         end
 
         it "should ignore any value that happens to be called 'contents'" do
           @page.values['contents'] = 'something else, why not?'
-          expected = { 'title' => 'test title', 'color' => 'blue', 'contents' => @contents }
+          expected = { 'title' => 'test title', 'color' => 'blue', 'contents' => @formatted }
           @template.expects(:full_contents).with(expected)
           @page.full_contents
         end
@@ -272,7 +272,7 @@ describe Page do
         end
 
         it 'should pass the page full contents to the template' do
-          @template.expects(:full_contents).with({ 'contents' => @contents })
+          @template.expects(:full_contents).with({ 'contents' => @formatted })
           @page.full_contents
         end
       end
