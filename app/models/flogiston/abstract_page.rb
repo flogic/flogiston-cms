@@ -28,6 +28,8 @@ class Flogiston::AbstractPage < ActiveRecord::Base
       Formatter::Raw
     when 'markdown'
       Formatter::Markdown
+    when 'haml'
+      Formatter::Haml
     end
   end
 
@@ -44,6 +46,14 @@ class Flogiston::AbstractPage < ActiveRecord::Base
       class << self
         def process(text)
           text
+        end
+      end
+    end
+
+    module Haml
+      class << self
+        def process(text)
+          ::Haml::Engine.new(text).to_html
         end
       end
     end

@@ -7,6 +7,11 @@
       Handle:
     = f.text_field(:handle)
   .field
+    %label{:for => 'template_format'}
+      Format:
+    - template_obj.format ||= template_obj.default_format
+    = f.select(:format, template_format_options)
+  .field
     %label{:for => 'template_contents'}
       Contents:
     = f.text_area :contents

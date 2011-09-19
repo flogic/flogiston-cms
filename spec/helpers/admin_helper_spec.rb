@@ -65,6 +65,18 @@ describe AdminHelper do
     end
   end
 
+  it 'should provide a list of template format options' do
+    helper.should respond_to(:template_format_options)
+  end
+
+  describe 'template format options' do
+    it 'should return an array of label/name pairs for HAML and ERB/raw' do
+      expected = [ %w[HAML haml], ['raw (ERB)', 'raw'] ]
+
+      helper.template_format_options.should == expected
+    end
+  end
+
   it 'should provide a list of page format options' do
     helper.should respond_to(:page_format_options)
   end

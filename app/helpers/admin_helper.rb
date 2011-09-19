@@ -17,6 +17,13 @@ module AdminHelper
     ]
   end
 
+  def template_format_options
+    [
+      %w[HAML          haml],
+        ['raw (ERB)', 'raw']
+    ]
+  end
+
   def page_format_options
     [
       %w[Markdown              markdown],

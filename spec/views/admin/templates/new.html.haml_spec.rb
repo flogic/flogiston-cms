@@ -32,6 +32,56 @@ describe 'admin/templates/new' do
       end
     end
 
+    it 'should have an input for the template format' do
+      do_render
+      response.should have_tag('form[id=?]', 'new_template') do
+        with_tag('select[name=?]', 'template[format]')
+      end
+    end
+
+    describe 'template format input' do
+      before do
+        @formats = [ %w[lab1 val1], %w[dee-FAULT raw], %w[blah bang] ]
+        template.stubs(:template_format_options).returns(@formats)
+      end
+
+      it 'should get the template format options' do
+        template.expects(:template_format_options).returns(@formats)
+        do_render
+      end
+
+      it 'should include an option for every format' do
+        do_render
+        response.should have_tag('form[id=?]', 'new_template') do
+          with_tag('select[name=?]', 'template[format]') do
+            @formats.each do |label, value|
+              with_tag('option[value=?]', value, label)
+            end
+          end
+        end
+      end
+
+      it 'should include a selected option for the template format' do
+        @template_obj.format = @formats.last.last
+        do_render
+        response.should have_tag('form[id=?]', 'new_template') do
+          with_tag('select[name=?]', 'template[format]') do
+            with_tag('option[value=?][selected]', @template_obj.format)
+          end
+        end
+      end
+
+      it "should select the 'raw' option if the template format is nil" do
+        @template_obj.format = nil
+        do_render
+        response.should have_tag('form[id=?]', 'new_template') do
+          with_tag('select[name=?]', 'template[format]') do
+            with_tag('option[value=?][selected]', 'raw')
+          end
+        end
+      end
+    end
+
     it 'should have an input for the template contents' do
       do_render
       response.should have_tag('form[id=?]', 'new_template') do
