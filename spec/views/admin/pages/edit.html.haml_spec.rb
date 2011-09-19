@@ -189,6 +189,56 @@ describe 'admin/pages/edit' do
       end
     end
 
+    it 'should have an input for the page format' do
+      do_render
+      response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+        with_tag('select[name=?]', 'page[format]')
+      end
+    end
+
+    describe 'page format input' do
+      before do
+        @formats = [ %w[lab1 val1], %w[dee-FAULT markdown], %w[blah bang] ]
+        template.stubs(:page_format_options).returns(@formats)
+      end
+
+      it 'should get the layout format options' do
+        template.expects(:page_format_options).returns(@formats)
+        do_render
+      end
+
+      it 'should include an option for every format' do
+        do_render
+        response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+          with_tag('select[name=?]', 'page[format]') do
+            @formats.each do |label, value|
+              with_tag('option[value=?]', value, label)
+            end
+          end
+        end
+      end
+
+      it 'should select the option for the page format' do
+        @page.format = @formats.last.last
+        do_render
+        response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+          with_tag('select[name=?]', 'page[format]') do
+            with_tag('option[value=?][selected]', @page.format)
+          end
+        end
+      end
+
+      it "should select the 'markdown' option if the page format is nil" do
+        @page.format = nil
+        do_render
+        response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+          with_tag('select[name=?]', 'page[format]') do
+            with_tag('option[value=?][selected]', 'markdown')
+          end
+        end
+      end
+    end
+
     it 'should have an input for the page contents' do
       do_render
       response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
@@ -252,7 +302,8 @@ describe 'admin/pages/edit' do
   
   describe 'preview area' do
     before :each do
-        @page.contents = "
+      @page.format = 'markdown'
+      @page.contents = "
  * whatever
  * whatever else
 "
@@ -262,16 +313,22 @@ describe 'admin/pages/edit' do
       do_render
       response.should have_tag('div[id=?]', 'preview')
     end
-    
-    it 'should include the page contents formatted with markdown' do
+
+    it 'should include the page contents formatted according to page format' do
       do_render
       response.should have_tag('div[id=?]', 'preview') do
         with_tag('li', :text => /whatever/)
       end
     end
-    
+
+    it 'should leave page contents unformatted if page format indicates it' do
+      @page.format = 'raw'
+      do_render
+      response.should have_tag('div[id=?]', 'preview', /\* whatever/)
+    end
+
     it 'should include referenced snippets' do
-      Snippet.generate!(:handle => 'testsnip', :contents => "
+      Snippet.generate!(:handle => 'testsnip', :format => 'markdown', :contents => "
  1. something
  1. nothing
       ")
@@ -282,7 +339,19 @@ describe 'admin/pages/edit' do
         with_tag('li', :text => /something/)
       end
     end
-    
+
+    it 'should allow unformatted snippet contents within formatted page contents' do
+      @page.format = 'markdown'
+      Snippet.generate!(:handle => 'testsnip', :format => 'raw', :contents => "
+ 1. something
+ 1. nothing
+      ")
+      @page.contents += "\n{{ testsnip }}\n"
+
+      do_render
+      response.should have_tag('div[id=?]', 'preview', /1\. nothing/)
+    end
+
     it 'should not exist if the page contents are the empty string' do
       @page.contents = ''
       do_render

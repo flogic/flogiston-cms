@@ -25,6 +25,16 @@ describe Layout do
       @layout.save!
       @layout.reload.contents.should == 'Test Contents'
     end
+
+    it 'should have format' do
+      @layout.should respond_to(:format)
+    end
+
+    it 'should allow setting and retrieving the format' do
+      @layout.format = 'haml'
+      @layout.save!
+      @layout.reload.format.should == 'haml'
+    end
   end
 
   describe 'validations' do
@@ -56,7 +66,7 @@ describe Layout do
     end
     
     it 'should not require a hash of replacements' do
-      lambda { @layout.full_contents }.should_not raise_error(ArgumentError)      
+      lambda { @layout.full_contents }.should_not raise_error(ArgumentError)
     end
     
     describe 'when no replacements are specified' do
@@ -87,6 +97,12 @@ describe Layout do
       it 'should replace an unknown snippet reference with the empty string' do
         @layout = Layout.generate!(:contents => "big bag boom {{ who_knows }} badaboom")
         @layout.full_contents.should == "big bag boom  badaboom"
+      end
+
+      it 'should format included snippet contents' do
+        snippet = Snippet.generate!(:handle => 'testsnip', :contents => 'blah *blah* blah', :format => 'markdown')
+        @layout = Layout.generate!(:contents => contents = "big bag boom {{ #{snippet.handle} }} badaboom")
+        @layout.full_contents.should == "big bag boom #{snippet.full_contents} badaboom"
       end
     end
     
@@ -216,6 +232,20 @@ describe Layout do
       it "should set the ActionView::Template object to recompile" do
         @layout.render_template(@view, @locals)
         @layout_obj.recompile?.should be_true
+      end
+
+      it "should set the ActionView::Template object's extension to the layout's format" do
+        format = 'haml'
+        @layout.format = format
+        @layout.render_template(@view, @locals)
+        @layout_obj.extension.should == format
+      end
+
+      it "should set the ActionView::Template object's extension to nil if the layout has no set format" do
+        format = nil
+        @layout.format = format
+        @layout.render_template(@view, @locals)
+        @layout_obj.extension.should == format
       end
       
       it 'should make the ActionView::Template object render the template with the given view and local assigns' do

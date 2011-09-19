@@ -30,7 +30,7 @@ class Flogiston::Page < Flogiston::AbstractPage
   end
   
   def full_contents
-    expanded = self.class.expand({}, contents)
+    expanded = formatted
     return expanded unless template
 
     replacements = values || {}
@@ -41,5 +41,15 @@ class Flogiston::Page < Flogiston::AbstractPage
   def template_replacements
     return [] unless template
     template.replacements
+  end
+
+  def formatted
+    return '' unless contents
+    processed = formatter.process(contents)
+    self.class.expand({}, processed)
+  end
+
+  def default_format
+    'markdown'
   end
 end

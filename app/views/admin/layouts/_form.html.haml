@@ -7,6 +7,11 @@
       Handle:
     = f.text_field(:handle)
   .field
+    %label{:for => 'layout_format'}
+      Format:
+    - layout.format ||= 'erb'
+    = f.select(:format, layout_format_options)
+  .field
     %label{:for => 'layout_contents'}
       Contents:
     = f.text_area :contents
