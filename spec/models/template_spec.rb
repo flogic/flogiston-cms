@@ -315,6 +315,16 @@ describe Template do
       @template.replacements.should == %w[more things]
     end
 
+    it 'should only return unique placeholders' do
+      contents = "a little {{ more }} complicated
+        {{ contents }} wrapper with
+        {{ things }} here and then {{ other }} things
+        and then the original {{ things }} repeated
+      "
+      @template = Template.generate!(:contents => contents)
+      @template.replacements.should == %w[more things other]
+    end
+
     it 'should be the empty list if the template has no content' do
       @template = Template.generate!(:contents => nil)
       @template.replacements.should == []

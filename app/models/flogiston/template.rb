@@ -16,7 +16,7 @@ class Flogiston::Template < Flogiston::AbstractPage
 
   def replacements
     return [] unless contents
-    contents.scan(/\{\{\s*(\w+)\s*\}\}/).flatten - %w[contents]
+    contents.scan(/\{\{\s*(\w+)\s*\}\}/).flatten.uniq - %w[contents]
   end
 
   def default_format
