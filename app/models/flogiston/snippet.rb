@@ -11,4 +11,8 @@ class Flogiston::Snippet < Flogiston::AbstractPage
   def default_format
     'raw'
   end
+
+  def raw?
+    (format || default_format) == 'raw'
+  end
 end
