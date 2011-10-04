@@ -40,6 +40,36 @@ describe 'admin/snippets/show' do
     response.should have_text(/\* whatever/)
   end
 
+  it 'should contain unformatted snippet contents in a pre block' do
+    @snippet.format = 'raw'
+    @snippet.contents = "
+ * whatever
+ * whatever else
+"
+    do_render
+    response.should have_tag('pre', /\* whatever/)
+  end
+
+  it 'should contain unformatted-by-default snippet contents in a pre block' do
+    @snippet.format = nil
+    @snippet.contents = "
+ * whatever
+ * whatever else
+"
+    do_render
+    response.should have_tag('pre', /\* whatever/)
+  end
+
+  it 'should have no pre black for formatted snippet contents' do
+    @snippet.format = 'markdown'
+    @snippet.contents = "
+ * whatever
+ * whatever else
+"
+    do_render
+    response.should_not have_tag('pre')
+  end
+
   it 'should include an edit link' do
     do_render
     response.should have_tag('a[href=?]', edit_admin_snippet_path(@snippet))

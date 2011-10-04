@@ -172,7 +172,6 @@ describe 'admin/snippets/edit' do
       response.should have_tag('div[id=?]', 'preview')
     end
 
-
     it 'should include the snippet contents formatted according to snippet format' do
       do_render
       response.should have_tag('div[id=?]', 'preview') do
@@ -184,6 +183,29 @@ describe 'admin/snippets/edit' do
       @snippet.format = 'raw'
       do_render
       response.should have_tag('div[id=?]', 'preview', /\* whatever/)
+    end
+
+    it 'should contain unformatted snippet contents in a pre block' do
+      @snippet.format = 'raw'
+      do_render
+      response.should have_tag('div[id=?]', 'preview') do
+        with_tag('pre', /\* whatever/)
+      end
+    end
+
+    it 'should contain unformatted-by-default snippet contents in a pre block' do
+      @snippet.format = nil
+      do_render
+      response.should have_tag('div[id=?]', 'preview') do
+        with_tag('pre', /\* whatever/)
+      end
+    end
+
+    it 'should have no pre black for formatted snippet contents' do
+      do_render
+      response.should have_tag('div[id=?]', 'preview') do
+        without_tag('pre')
+      end
     end
 
     it 'should not exist if the snippet contents are the empty string' do

@@ -159,4 +159,24 @@ describe Snippet do
     end
   end
 
+  it 'should indicate whether the format is raw' do
+    @snippet.should respond_to(:raw?)
+  end
+
+  describe 'indicating whether the format is raw' do
+    it "should return true if the format is set to 'raw'" do
+      @snippet.format = 'raw'
+      @snippet.raw?.should == true
+    end
+
+    it 'should return true if the format is unset' do
+      @snippet.format = nil
+      @snippet.raw?.should == true
+    end
+
+    it 'should return false for another format' do
+      @snippet.format = 'markdown'
+      @snippet.raw?.should == false
+    end
+  end
 end
