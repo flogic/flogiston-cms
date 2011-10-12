@@ -138,6 +138,40 @@ this
         @snippet = Snippet.generate!(:format => 'raw', :contents => contents[:snippet], :handle => 'thing')
         @layout.full_contents.should == contents[:expected]
       end
+
+      it 'should not change snippet identation for non-HAML layouts' do
+        contents = {}
+        contents[:layout] = "
+this
+  is
+    a
+    {{ thing }}
+  test
+"
+        contents[:snippet] = "
+really
+  crazy
+  blah
+boing
+  boom
+"
+        contents[:expected] = "
+this
+  is
+    a
+    really
+  crazy
+  blah
+boing
+  boom
+  test
+"
+        contents.each { |k, v|  v.strip! }
+
+        @layout = Layout.generate!(:format => 'erb', :contents => contents[:layout])
+        @snippet = Snippet.generate!(:format => 'raw', :contents => contents[:snippet], :handle => 'thing')
+        @layout.full_contents.should == contents[:expected]
+      end
     end
     
     describe 'when replacements are specified' do
