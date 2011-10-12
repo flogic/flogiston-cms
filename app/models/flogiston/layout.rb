@@ -2,6 +2,26 @@ class Flogiston::Layout < Flogiston::AbstractPage
   validates_uniqueness_of :handle
   validates_presence_of   :handle
 
+  class << self
+    def expand(replacements, text)
+      return '' unless text
+
+      replacements = replacements.stringify_keys
+
+      text.gsub(/(^\s*)?\{\{\s*\w+\s*\}\}/) do |pattern|
+        handle = pattern.match(/\w+/)[0]
+        snippet = Snippet.find_by_handle(handle)
+
+        if snippet
+          whitespace = pattern.match(/^\s*/)[0]
+          snippet.full_contents.gsub(/^/, whitespace)
+        else
+          replacements.has_key?(handle) ? replacements[handle] : ''
+        end
+      end
+    end
+  end
+
   def full_contents(replacements = {})
     self.class.expand(replacements, contents)
   end

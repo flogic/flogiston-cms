@@ -104,6 +104,40 @@ describe Layout do
         @layout = Layout.generate!(:contents => contents = "big bag boom {{ #{snippet.handle} }} badaboom")
         @layout.full_contents.should == "big bag boom #{snippet.full_contents} badaboom"
       end
+
+      it 'should correctly indent raw snippets used in HAML layouts' do
+        contents = {}
+        contents[:layout] = "
+this
+  is
+    a
+    {{ thing }}
+  test
+"
+        contents[:snippet] = "
+really
+  crazy
+  blah
+boing
+  boom
+"
+        contents[:expected] = "
+this
+  is
+    a
+    really
+      crazy
+      blah
+    boing
+      boom
+  test
+"
+        contents.each { |k, v|  v.strip! }
+
+        @layout = Layout.generate!(:format => 'haml', :contents => contents[:layout])
+        @snippet = Snippet.generate!(:format => 'raw', :contents => contents[:snippet], :handle => 'thing')
+        @layout.full_contents.should == contents[:expected]
+      end
     end
     
     describe 'when replacements are specified' do
