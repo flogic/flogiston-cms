@@ -132,18 +132,18 @@ describe Template do
       end
 
       it 'should expand the formatted template contents' do
-        Template.expects(:expand).with({}, @formatted).returns(@expanded)
+        Template.expects(:expand).with(@formatted, {}).returns(@expanded)
         @template.formatted
       end
 
       it 'should pass the given replacements to expansion' do
         replacements = { 'title' => 'test title', 'color' => 'blue' }
-        Template.expects(:expand).with(replacements, @formatted).returns(@expanded)
+        Template.expects(:expand).with(@formatted, replacements).returns(@expanded)
         @template.formatted(replacements)
       end
 
       it 'should default replacements to the empty hash' do
-        Template.expects(:expand).with({}, @formatted).returns(@expanded)
+        Template.expects(:expand).with(@formatted, {}).returns(@expanded)
         @template.formatted
       end
 
@@ -211,7 +211,7 @@ describe Template do
     describe 'when no replacements are specified' do
       it 'should be the contents in simple cases' do
         contents = 'abba dabba'
-        Template.expand({}, contents) == contents
+        Template.expand(contents, {}).should == contents
       end
 
       it 'should include the contents of any referenced snippet' do
@@ -220,7 +220,7 @@ describe Template do
         Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
 
         contents = "big bag boom {{ #{snippet_handle} }} badaboom"
-        Template.expand({}, contents).should == "big bag boom #{snippet_contents} badaboom"
+        Template.expand(contents, {}).should == "big bag boom #{snippet_contents} badaboom"
       end
 
       it 'should handle multiple snippet references' do
@@ -229,18 +229,18 @@ describe Template do
         snippets.push Snippet.generate!(:handle => 'testsnip2', :contents => 'bing bang bong')
 
         contents = "big bag {{#{snippets[0].handle}}} boom {{ #{snippets[1].handle} }} badaboom"
-        Template.expand({}, contents).should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
+        Template.expand(contents, {}).should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
       end
 
       it 'should replace an unknown snippet reference with the empty string' do
         contents = "big bag boom {{ who_knows }} badaboom"
-        Template.expand({}, contents).should == "big bag boom  badaboom"
+        Template.expand(contents, {}).should == "big bag boom  badaboom"
       end
 
       it 'should format included snippet contents' do
         snippet = Snippet.generate!(:handle => 'testsnip', :contents => 'blah *blah* blah', :format => 'markdown')
         contents = "big bag boom {{ #{snippet.handle} }} badaboom"
-        Template.expand({}, contents).should == "big bag boom #{snippet.full_contents} badaboom"
+        Template.expand(contents, {}).should == "big bag boom #{snippet.full_contents} badaboom"
       end
     end
 
@@ -255,7 +255,7 @@ describe Template do
         Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
 
         contents = "big bag boom {{ #{snippet_handle} }} badaboom"
-        Template.expand(@replacements, contents).should == "big bag boom #{snippet_contents} badaboom"
+        Template.expand(contents, @replacements).should == "big bag boom #{snippet_contents} badaboom"
       end
 
       it 'should handle multiple snippet references that do not match replacements' do
@@ -264,19 +264,19 @@ describe Template do
         snippets.push Snippet.generate!(:handle => 'testsnip2', :contents => 'bing bang bong')
 
         contents = "big bag {{#{snippets[0].handle}}} boom {{ #{snippets[1].handle} }} badaboom"
-        Template.expand(@replacements, contents).should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
+        Template.expand(contents, @replacements).should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
       end
 
       it 'should replace a matched replacement with its replacement string' do
         contents = 'abba dabba {{ replacement }} yabba dabba'
-        Template.expand(@replacements, contents) .should == "abba dabba This is the replacement yabba dabba"
+        Template.expand(contents, @replacements) .should == "abba dabba This is the replacement yabba dabba"
       end
 
       it 'should match replacements with symbol keys' do
         replacements = { :replacement => 'This is the replacement' }
 
         contents = 'abba dabba {{ replacement }} yabba dabba'
-        Template.expand(replacements, contents).should == "abba dabba This is the replacement yabba dabba"
+        Template.expand(contents, replacements).should == "abba dabba This is the replacement yabba dabba"
       end
 
       it 'should prefer to use a snippet instead of a replacement when there is a conflict' do
@@ -285,12 +285,12 @@ describe Template do
         Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
 
         contents = "big bag boom {{ #{snippet_handle} }} badaboom"
-        Template.expand(@replacements, contents).should == "big bag boom #{snippet_contents} badaboom"        
+        Template.expand(contents, @replacements).should == "big bag boom #{snippet_contents} badaboom"        
       end
 
       it 'should replace an unknown snippet reference with the empty string' do
         contents = "big bag boom {{ who_knows }} badaboom"
-        Template.expand(@replacements, contents).should == "big bag boom  badaboom"
+        Template.expand(contents, @replacements).should == "big bag boom  badaboom"
       end
     end
   end

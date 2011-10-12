@@ -2,7 +2,7 @@ class Flogiston::AbstractPage < ActiveRecord::Base
   set_table_name 'pages'
   
   class << self
-    def expand(replacements, text)
+    def expand(text, replacements)
       return '' unless text
       
       replacements = replacements.stringify_keys

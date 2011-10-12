@@ -46,7 +46,7 @@ class Flogiston::Page < Flogiston::AbstractPage
   def formatted
     return '' unless contents
     processed = formatter.process(contents)
-    self.class.expand({}, processed)
+    self.class.expand(processed, {})
   end
 
   def default_format

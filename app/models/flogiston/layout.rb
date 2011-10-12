@@ -3,7 +3,7 @@ class Flogiston::Layout < Flogiston::AbstractPage
   validates_presence_of   :handle
 
   class << self
-    def expand(replacements, text, format)
+    def expand(text, replacements, format)
       return '' unless text
 
       replacements = replacements.stringify_keys
@@ -24,7 +24,7 @@ class Flogiston::Layout < Flogiston::AbstractPage
   end
 
   def full_contents(replacements = {})
-    self.class.expand(replacements, contents, format)
+    self.class.expand(contents, replacements, format)
   end
   
   ### for ActionView Layout fakery

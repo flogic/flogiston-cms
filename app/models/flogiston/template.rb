@@ -11,7 +11,7 @@ class Flogiston::Template < Flogiston::AbstractPage
   def formatted(replacements = {})
     return '' unless contents
     processed = formatter.process(contents)
-    self.class.expand(replacements, processed)
+    self.class.expand(processed, replacements)
   end
 
   def replacements

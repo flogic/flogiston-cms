@@ -328,13 +328,13 @@ describe Page do
       end
 
       it 'should expand the formatted page contents' do
-        Page.expects(:expand).with({}, @formatted).returns(@expanded)
+        Page.expects(:expand).with(@formatted, {}).returns(@expanded)
         @page.formatted
       end
 
       it 'should pass no replacements to expansion even if the page holds values' do
         @page.values = { 'title' => 'test title', 'color' => 'blue' }
-        Page.expects(:expand).with({}, @formatted).returns(@expanded)
+        Page.expects(:expand).with(@formatted, {}).returns(@expanded)
         @page.formatted
       end
 
@@ -408,7 +408,7 @@ describe Page do
   describe 'expanding contents' do
     it 'should be the contents in simple cases' do
       contents = 'abba dabba'
-      Page.expand({}, contents) == contents
+      Page.expand(contents, {}) == contents
     end
 
     it 'should include the contents of any referenced snippet' do
@@ -417,7 +417,7 @@ describe Page do
       Snippet.generate!(:handle => snippet_handle, :contents => snippet_contents)
 
       contents = "big bag boom {{ #{snippet_handle} }} badaboom"
-      Page.expand({}, contents).should == "big bag boom #{snippet_contents} badaboom"
+      Page.expand(contents, {}).should == "big bag boom #{snippet_contents} badaboom"
     end
 
     it 'should handle multiple snippet references' do
@@ -426,18 +426,18 @@ describe Page do
       snippets.push Snippet.generate!(:handle => 'testsnip2', :contents => 'bing bang bong')
 
       contents = "big bag {{#{snippets[0].handle}}} boom {{ #{snippets[1].handle} }} badaboom"
-      Page.expand({}, contents).should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
+      Page.expand(contents, {}).should == "big bag #{snippets[0].contents} boom #{snippets[1].contents} badaboom"
     end
 
     it 'should replace an unknown snippet reference with the empty string' do
       contents = "big bag boom {{ who_knows }} badaboom"
-      Page.expand({}, contents).should == "big bag boom  badaboom"
+      Page.expand(contents, {}).should == "big bag boom  badaboom"
     end
 
     it 'should format included snippet contents' do
       snippet = Snippet.generate!(:handle => 'testsnip', :contents => 'blah *blah* blah', :format => 'markdown')
       contents = "big bag boom {{ #{snippet.handle} }} badaboom"
-      Page.expand({}, contents).should == "big bag boom #{snippet.full_contents} badaboom"
+      Page.expand(contents, {}).should == "big bag boom #{snippet.full_contents} badaboom"
     end
   end
 end
