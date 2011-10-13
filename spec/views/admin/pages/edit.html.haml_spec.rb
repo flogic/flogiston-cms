@@ -138,6 +138,13 @@ describe 'admin/pages/edit' do
         @page.update_attributes!(:template => Template.generate!)
       end
 
+      it 'should link to the template' do
+        do_render
+        response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+          with_tag('a[href=?]', admin_template_path(@page.template))
+        end
+      end
+
       describe 'and the template has replacements' do
         before do
           @replacements = %w[some stuff here]
@@ -179,6 +186,13 @@ describe 'admin/pages/edit' do
     describe 'when the page has no template' do
       before do
         @page.update_attributes!(:template => nil)
+      end
+
+      it 'should not link to any template' do
+        do_render
+        response.should have_tag('form[id=?]', "edit_page_#{@page.id}") do
+          without_tag('a[href^=?]', admin_templates_path)
+        end
       end
 
       it 'should have no replacement value inputs' do

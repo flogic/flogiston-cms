@@ -35,7 +35,38 @@ describe 'admin/templates/index' do
         end
       end
     end
-    
+
+    describe 'when the template has associated pages' do
+      before do
+        @count = 3
+        @count.times { @template_obj.pages.generate! }
+      end
+
+      it 'should include the number of pages' do
+        do_render
+        response.should have_tag('table[id=?]', 'templates') do
+          with_tag('tbody') do
+            with_tag('tr', Regexp.new(Regexp.escape(@count.to_s)))
+          end
+        end
+      end
+    end
+
+    describe 'when the template has no associated pages' do
+      before do
+        @template_obj.pages.clear
+      end
+
+      it 'should not indicate 0 pages' do
+        do_render
+        response.should have_tag('table[id=?]', 'templates') do
+          with_tag('tbody') do
+            without_tag('tr', Regexp.new(Regexp.escape('0')))
+          end
+        end
+      end
+    end
+
     it 'should include an edit link' do
       do_render
       response.should have_tag('table[id=?]', 'templates') do

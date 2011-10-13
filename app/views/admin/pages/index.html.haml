@@ -3,6 +3,7 @@
     %tr.header
       %th handle
       %th title
+      %th template
       %th actions
   %tbody
     - @pages.each do |page|
@@ -11,6 +12,9 @@
           = link_to(page.path, page.path, { :target => '_blank' }) 
           = show_invalid_handle(page)
         %td= page.title
-        %td.actions 
+        %td
+          -if page.template
+            = link_to page.template.handle, admin_template_path(page.template)
+        %td.actions
           = link_to 'edit', edit_admin_page_path(page)
           = link_to 'delete', admin_page_path(page), :confirm => 'Are you sure?', :method => :delete

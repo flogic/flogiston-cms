@@ -16,6 +16,8 @@
     %label{:for => 'page_template_id'}
       Template:
     = f.select(:template_id, template_options)
+    - if page.template
+      = link_to 'view', admin_template_path(page.template), :target => '_blank'
   - f.fields_for :values do |ff|
     - page.values ||= {}
     - page.template_replacements.each do |r|

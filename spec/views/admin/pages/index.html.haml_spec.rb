@@ -63,7 +63,45 @@ describe 'admin/pages/index' do
         end
       end
     end
-    
+
+    describe 'when the page has a template' do
+      before do
+        @template = Template.generate!
+        @page.template = @template
+      end
+
+      it 'should include the template handle' do
+        do_render
+        response.should have_tag('table[id=?]', 'pages') do
+          with_tag('tbody') do
+            with_tag('tr', Regexp.new(Regexp.escape(@template.handle)))
+          end
+        end
+      end
+
+      it 'should include a link to the template' do
+        do_render
+        response.should have_tag('table[id=?]', 'pages') do
+          with_tag('tbody') do
+            with_tag('tr') do
+              with_tag('a[href=?]', admin_template_path(@template))
+            end
+          end
+        end
+      end
+    end
+
+    describe 'when the page has no template' do
+      before do
+        @page.template = nil
+      end
+
+      it 'should not link to any template' do
+        do_render
+        response.should_not have_tag('a[href^=?]', admin_templates_path)
+      end
+    end
+
     it 'should include an edit link' do
       do_render
       response.should have_tag('table[id=?]', 'pages') do

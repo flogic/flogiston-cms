@@ -33,4 +33,28 @@ describe 'admin/templates/show' do
     do_render
     response.should have_tag('a[href=?]', edit_admin_template_path(@template_obj))
   end
+
+  describe 'when the template has associated pages' do
+    before :each do
+      2.times { @template_obj.pages.generate! }
+    end
+
+    it 'should include a link to edit each associated page' do
+      do_render
+      @template_obj.pages.each do |page|
+        response.should have_tag('a[href=?]', edit_admin_page_path(page))
+      end
+    end
+  end
+
+  describe 'when the template has no associated pages' do
+    before :each do
+      @template_obj.pages.clear
+    end
+
+    it 'should not include any links to edit pages' do
+      do_render
+      response.should_not have_tag('a[href^=?]', admin_pages_path)
+    end
+  end
 end
