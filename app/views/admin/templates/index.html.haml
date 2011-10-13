@@ -2,12 +2,16 @@
   %thead
     %tr.header
       %th handle
+      %th pages
       %th actions
   %tbody
     - @templates.each do |template_obj|
       %tr.body
+        %td= link_to(template_obj.handle, admin_template_path(template_obj), { :target => '_blank' }) 
         %td
-          = link_to(template_obj.handle, admin_template_path(template_obj), { :target => '_blank' }) 
-        %td.actions 
+          - pages = template_obj.pages
+          - unless pages.count.zero?
+            = pages.count
+        %td.actions
           = link_to 'edit', edit_admin_template_path(template_obj)
           = link_to 'delete', admin_template_path(template_obj), :confirm => 'Are you sure?', :method => :delete
