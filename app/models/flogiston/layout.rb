@@ -27,6 +27,11 @@ class Flogiston::Layout < Flogiston::AbstractPage
     end
   end
 
+  def make_default!
+    Layout.update_all(:default => false)
+    update_attributes!(:default => true)
+  end
+
   def full_contents(replacements = {})
     self.class.expand(contents, replacements, format)
   end

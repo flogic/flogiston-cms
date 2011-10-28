@@ -429,4 +429,27 @@ boing
       Layout.default.should be_nil
     end
   end
+
+  it 'should be able to set itself as the default' do
+    @layout.should respond_to(:make_default!)
+  end
+
+  describe 'setting itself as the default' do
+    before do
+      @layout = Layout.generate!(:default => false)
+    end
+
+    it 'should set and persist its default flag to true' do
+      @layout.make_default!
+      @layout.reload
+      @layout.default.should == true
+    end
+
+    it 'should set the default flag for all other layouts to false' do
+      5.times { Layout.generate!(:default => true) }
+      @layout.make_default!
+
+      Layout.count(:conditions => { :default => true }).should == 1
+    end
+  end
 end
