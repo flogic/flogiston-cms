@@ -35,6 +35,16 @@ describe Layout do
       @layout.save!
       @layout.reload.format.should == 'haml'
     end
+
+    it 'should have a default flag' do
+      @layout.should respond_to(:default)
+    end
+
+    it 'should allow setting and retrieving the default flag' do
+      @layout.default = true
+      @layout.save!
+      @layout.reload.default.should == true
+    end
   end
 
   describe 'validations' do
