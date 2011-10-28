@@ -24,6 +24,10 @@ describe Admin::LayoutsController, "#route_for" do
   it "should map { :controller => 'layouts', :action => 'destroy', :id => 1} to /admin/layouts/1" do
     route_for(:controller => "admin/layouts", :action => "destroy", :id => '1').should == { :path => "/admin/layouts/1", :method => 'delete' }
   end
+
+  it "should map { :controller => 'layouts', :action => 'default', :id => 1} to /admin/layouts/1/default" do
+    route_for(:controller => "admin/layouts", :action => "default", :id => '1').should ==  { :path => "/admin/layouts/1/default", :method => 'put' }
+  end
 end
 
 describe Admin::LayoutsController, "#params_from" do
@@ -54,5 +58,9 @@ describe Admin::LayoutsController, "#params_from" do
   
   it "should generate params { :controller => 'layouts', action => 'destroy', id => '1' } from DELETE /admin/layouts/1" do
     params_from(:delete, "/admin/layouts/1").should == {:controller => "admin/layouts", :action => "destroy", :id => "1"}
+  end
+
+  it "should generate params { :controller => 'layouts', action => 'default', id => '1' } from PUT /admin/layouts/1/default" do
+    params_from(:put, "/admin/layouts/1/default").should == {:controller => "admin/layouts", :action => "default", :id => "1"}
   end
 end

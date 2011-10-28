@@ -35,6 +35,26 @@ describe 'admin/layouts/index' do
         end
       end
     end
+
+    it 'should include a default marker if this layout is the default' do
+      @layout.default = true
+      do_render
+      response.should have_tag('table[id=?]', 'layouts') do
+        with_tag('tbody') do
+          with_tag('tr', Regexp.new(Regexp.escape('(default)')))
+        end
+      end
+    end
+
+    it 'should not include a default marker if this layout is not the default' do
+      @layout.default = false
+      do_render
+      response.should have_tag('table[id=?]', 'layouts') do
+        with_tag('tbody') do
+          without_tag('tr', Regexp.new(Regexp.escape('(default)')))
+        end
+      end
+    end
     
     it 'should include an edit link' do
       do_render
@@ -57,7 +77,18 @@ describe 'admin/layouts/index' do
         end
       end
     end
-    
+
+    it 'should include a make-default link' do
+      do_render
+      response.should have_tag('table[id=?]', 'layouts') do
+        with_tag('tbody') do
+          with_tag('tr') do
+            with_tag('a[href=?][onclick*=?]', default_admin_layout_path(@layout), 'put')
+          end
+        end
+      end
+    end
+
     it 'should include a show link which opens the layout in a new window' do
       do_render
       response.should have_tag('table[id=?]', 'layouts') do

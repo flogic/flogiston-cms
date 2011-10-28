@@ -467,4 +467,42 @@ describe Admin::LayoutsController do
       end
     end
   end
+
+  describe 'default' do
+    describe 'when given a valid layout' do
+      before :each do
+        @layout = Layout.generate!
+        @id = @layout.id.to_s
+      end
+
+      def do_put
+        put :default, :id => @id
+      end
+
+      it 'should not create a new layout' do
+        lambda { do_put }.should_not change(Layout, :count)
+      end
+
+      it 'should make the layout the new default' do
+        Layout.stubs(:find).returns(@layout)
+        @layout.expects(:make_default!)
+        do_put
+      end
+
+      it 'should redirect to the admin list view for layouts' do
+        do_put
+        response.should redirect_to(admin_layouts_url)
+      end
+    end
+
+    describe 'when attempting to update a non-existent layout' do
+      def do_put
+        put :default, :id => 123456789
+      end
+
+      it 'should result in a record not found exception' do
+        lambda { do_put }.should raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+  end
 end

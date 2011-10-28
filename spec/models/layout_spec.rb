@@ -35,6 +35,16 @@ describe Layout do
       @layout.save!
       @layout.reload.format.should == 'haml'
     end
+
+    it 'should have a default flag' do
+      @layout.should respond_to(:default)
+    end
+
+    it 'should allow setting and retrieving the default flag' do
+      @layout.default = true
+      @layout.save!
+      @layout.reload.default.should == true
+    end
   end
 
   describe 'validations' do
@@ -382,6 +392,71 @@ boing
       it 'should return false' do
         @layout.exempt_from_layout?.should == false
       end
+    end
+  end
+
+  it 'should be able to retrieve the default' do
+    Layout.should respond_to(:default)
+  end
+
+  describe 'retrieving the default' do
+    before do
+      Layout.delete_all
+      @layouts = Array.new(5) { Layout.generate!(:default => false) }
+      @default = @layouts[3]
+      @default.update_attributes!(:default => true)
+    end
+
+    it 'should return the Layout object marked as default' do
+      Layout.default.should == @default
+    end
+
+    it 'should return one of the Layout objects marked as default if there are multiple matches' do
+      defaults = @layouts.values_at(0,2,3)
+      defaults.each { |l|  l.update_attributes!(:default => true) }
+
+      result = Layout.default
+      defaults.should include(result)
+    end
+
+    it 'should return nil if no Layout objects are marked as default' do
+      Layout.update_all(:default => false)
+      Layout.default.should be_nil
+    end
+
+    it 'should return nil if there are no Layout objects' do
+      Layout.delete_all
+      Layout.default.should be_nil
+    end
+  end
+
+  it 'should be able to set itself as the default' do
+    @layout.should respond_to(:make_default!)
+  end
+
+  describe 'setting itself as the default' do
+    before do
+      @layout = Layout.generate!(:default => false)
+    end
+
+    it 'should set and persist its default flag to true' do
+      @layout.make_default!
+      @layout.reload
+      @layout.default.should == true
+    end
+
+    it 'should set the default flag for all other layouts to false' do
+      5.times { Layout.generate!(:default => true) }
+      @layout.make_default!
+
+      Layout.count(:conditions => { :default => true }).should == 1
+    end
+
+    it 'should keep itself as default if already set to default' do
+      @layout.update_attributes!(:default => true)
+      @layout.make_default!
+      @layout.reload
+      @layout.default.should == true
     end
   end
 end
