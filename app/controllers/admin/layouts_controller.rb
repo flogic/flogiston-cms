@@ -47,8 +47,13 @@ class Admin::LayoutsController < AdminController
     layout.destroy
     redirect_to admin_layouts_path
   end
-  
-  
+
+  def default
+    layout = Layout.find(params[:id])
+    layout.make_default!
+    redirect_to admin_layouts_path
+  end
+
   private
   
   def preview?

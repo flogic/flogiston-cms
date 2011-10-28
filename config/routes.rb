@@ -5,6 +5,6 @@ ActionController::Routing::Routes.draw do |map|
     admin.resources :pages
     admin.resources :snippets
     admin.resources :templates
-    admin.resources :layouts
+    admin.resources :layouts, :member => { :default => :put }
   end
 end
