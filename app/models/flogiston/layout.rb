@@ -21,6 +21,10 @@ class Flogiston::Layout < Flogiston::AbstractPage
         end
       end
     end
+
+    def default
+      first(:conditions => { :default => true })
+    end
   end
 
   def full_contents(replacements = {})

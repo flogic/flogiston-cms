@@ -394,4 +394,39 @@ boing
       end
     end
   end
+
+  it 'should be able to retrieve the default' do
+    Layout.should respond_to(:default)
+  end
+
+  describe 'retrieving the default' do
+    before do
+      Layout.delete_all
+      @layouts = Array.new(5) { Layout.generate!(:default => false) }
+      @default = @layouts[3]
+      @default.update_attributes!(:default => true)
+    end
+
+    it 'should return the Layout object marked as default' do
+      Layout.default.should == @default
+    end
+
+    it 'should return one of the Layout objects marked as default if there are multiple matches' do
+      defaults = @layouts.values_at(0,2,3)
+      defaults.each { |l|  l.update_attributes!(:default => true) }
+
+      result = Layout.default
+      defaults.should include(result)
+    end
+
+    it 'should return nil if no Layout objects are marked as default' do
+      Layout.update_all(:default => false)
+      Layout.default.should be_nil
+    end
+
+    it 'should return nil if there are no Layout objects' do
+      Layout.delete_all
+      Layout.default.should be_nil
+    end
+  end
 end
