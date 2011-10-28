@@ -28,7 +28,7 @@ class Flogiston::Layout < Flogiston::AbstractPage
   end
 
   def make_default!
-    Layout.update_all(:default => false)
+    Layout.update_all({ :default => false }, "id <> #{self.id}")
     update_attributes!(:default => true)
   end
 

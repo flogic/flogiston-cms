@@ -451,5 +451,12 @@ boing
 
       Layout.count(:conditions => { :default => true }).should == 1
     end
+
+    it 'should keep itself as default if already set to default' do
+      @layout.update_attributes!(:default => true)
+      @layout.make_default!
+      @layout.reload
+      @layout.default.should == true
+    end
   end
 end
