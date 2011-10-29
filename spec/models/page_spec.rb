@@ -145,7 +145,7 @@ describe Page do
       end
       
       it 'should ask the routes to recognize the handle' do
-        ActionController::Routing::Routes.expects(:recognize_path).with(@handle).returns({})
+        ActionController::Routing::Routes.expects(:recognize_path).with(@handle, :method => :get).returns({})
         Page.valid_handle?(@handle)
       end
       
@@ -171,12 +171,12 @@ describe Page do
       
       it 'should prepend a / to the given handle if needed' do
         handle = 'something'
-        ActionController::Routing::Routes.expects(:recognize_path).with("/#{handle}").returns({})
+        ActionController::Routing::Routes.expects(:recognize_path).with("/#{handle}", :method => :get).returns({})
         Page.valid_handle?(handle)
       end
       
       it 'should handle a nil handle' do
-        ActionController::Routing::Routes.expects(:recognize_path).with('/').returns({})
+        ActionController::Routing::Routes.expects(:recognize_path).with('/', :method => :get).returns({})
         Page.valid_handle?(nil)
       end
     end

@@ -18,7 +18,7 @@ class Flogiston::Page < Flogiston::AbstractPage
   class << self
     def valid_handle?(handle)
       handle = "/#{handle}" unless (handle || '')[0,1] == '/'
-      recog = ActionController::Routing::Routes.recognize_path(handle)
+      recog = ActionController::Routing::Routes.recognize_path(handle, :method => :get)
       !!(recog[:controller] == 'pages' && recog[:path])
     rescue ActionController::RoutingError
       true
