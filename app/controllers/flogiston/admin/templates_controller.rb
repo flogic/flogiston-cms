@@ -1,4 +1,4 @@
-class Admin::TemplatesController < AdminController
+class Flogiston::Admin::TemplatesController < AdminController
   def index
     @templates = Template.all.sort_by(&:handle)
     @title = 'View all templates'

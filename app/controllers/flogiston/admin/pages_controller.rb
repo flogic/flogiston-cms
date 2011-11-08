@@ -1,4 +1,4 @@
-class Admin::PagesController < AdminController
+class Flogiston::Admin::PagesController < AdminController
   helper 'pages'
 
   def index

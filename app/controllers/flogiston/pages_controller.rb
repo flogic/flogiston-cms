@@ -1,4 +1,4 @@
-class PagesController < ApplicationController
+class Flogiston::PagesController < ApplicationController
   def show
     if params[:id]
       @page = Page.find(params[:id])
