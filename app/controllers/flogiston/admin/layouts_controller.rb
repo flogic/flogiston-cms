@@ -1,4 +1,4 @@
-class Admin::LayoutsController < AdminController
+class Flogiston::Admin::LayoutsController < AdminController
   def index
     @layouts = Layout.all.sort_by(&:handle)
     @title = 'View all layouts'
