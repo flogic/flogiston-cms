@@ -182,6 +182,24 @@ describe Template do
         result = @template.formatter.process(@contents)
         result.should match(/<div class='yo'>\s*<\/div>/)
       end
+
+      it 'should work with helper methods' do
+        @contents = "= link_to 'blah', 'test'"
+        result = @template.formatter.process(@contents)
+        result.should match(/<a href="test">blah<\/a>/)
+      end
+
+      it 'should work with custom (not Rails core) helper methods' do
+        module PagesHelper
+          def helper_test(text, color)
+            %Q[<span color="#{color}">#{text}</span>]
+          end
+        end
+
+        @contents = "= helper_test 'hi', 'blue'"
+        result = @template.formatter.process(@contents)
+        result.should match(/<span color="blue">hi<\/span>/)
+      end
     end
 
     describe "when the format is 'raw'" do

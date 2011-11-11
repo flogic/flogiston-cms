@@ -53,7 +53,8 @@ class Flogiston::AbstractPage < ActiveRecord::Base
     module Haml
       class << self
         def process(text)
-          ::Haml::Engine.new(text).to_html
+          scope = PagesController.helpers
+          ::Haml::Engine.new(text).to_html(scope)
         end
       end
     end
