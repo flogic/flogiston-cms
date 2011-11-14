@@ -5,13 +5,13 @@ class Flogiston::Template < Flogiston::AbstractPage
   validates_presence_of   :handle
 
   def full_contents(replacements = {})
-    formatted(replacements)
+    processed = formatted(replacements)
+    self.class.expand(processed, replacements)
   end
 
   def formatted(replacements = {})
     return '' unless contents
-    processed = formatter.process(contents)
-    self.class.expand(processed, replacements)
+    formatter.process(contents)
   end
 
   def replacements

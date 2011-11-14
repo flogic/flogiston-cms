@@ -66,6 +66,9 @@ describe Template do
     before do
       @formatted = 'formatted template content'
       @template.stubs(:formatted).returns(@formatted)
+
+      @expanded = 'expanded template contents'
+      Template.stubs(:expand).returns(@expanded)
     end
 
     it 'should accept a hash of replacements' do
@@ -82,14 +85,25 @@ describe Template do
       @template.full_contents(replacements)
     end
 
-    it 'should default the replacements to the empty hash' do
+    it 'should default the formatting replacements to the empty hash' do
       @template.expects(:formatted).with({})
       @template.full_contents
     end
 
-    it 'should return the formatted contents' do
-      @template.stubs(:formatted).returns(@formatted)
-      @template.full_contents.should == @formatted
+    it 'should expand the formatted contents, passing the given replacements' do
+      replacements = { 'thing' => 'other' }
+      Template.expects(:expand).with(@formatted, replacements)
+      @template.full_contents(replacements)
+    end
+
+    it 'should default the expansion replacements to the empty hash' do
+      Template.expects(:expand).with(@formatted, {})
+      @template.full_contents
+    end
+
+    it 'should return the expanded contents' do
+      Template.stubs(:expand).returns(@expanded)
+      @template.full_contents.should == @expanded
     end
   end
 
@@ -107,9 +121,6 @@ describe Template do
         @formatter.stubs(:process).returns(@formatted)
 
         @template.stubs(:formatter).returns(@formatter)
-
-        @expanded = 'expanded template contents'
-        Template.stubs(:expand).returns(@expanded)
       end
 
       it 'should accept a hash of replacements' do
@@ -131,25 +142,9 @@ describe Template do
         @template.formatted
       end
 
-      it 'should expand the formatted template contents' do
-        Template.expects(:expand).with(@formatted, {}).returns(@expanded)
-        @template.formatted
-      end
-
-      it 'should pass the given replacements to expansion' do
-        replacements = { 'title' => 'test title', 'color' => 'blue' }
-        Template.expects(:expand).with(@formatted, replacements).returns(@expanded)
-        @template.formatted(replacements)
-      end
-
-      it 'should default replacements to the empty hash' do
-        Template.expects(:expand).with(@formatted, {}).returns(@expanded)
-        @template.formatted
-      end
-
-      it 'should return the results of expanding the formatted template contents' do
-        Template.stubs(:expand).returns(@expanded)
-        @template.formatted.should == @expanded
+      it 'should return the formatted template contents' do
+        @formatter.stubs(:process).returns(@formatted)
+        @template.formatted.should == @formatted
       end
     end
 
