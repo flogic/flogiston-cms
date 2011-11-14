@@ -1,16 +1,20 @@
 class Flogiston::AbstractPage < ActiveRecord::Base
   set_table_name 'pages'
-  
+
   class << self
+    def default_replacements
+      Hash.new('')
+    end
+
     def expand(text, replacements)
       return '' unless text
-      
+
       replacements = replacements.stringify_keys
-      
+
       text.gsub(/\{\{\s*\w+\s*\}\}/) do |pattern|
         handle = pattern.match(/\w+/)[0]
         snippet = Snippet.find_by_handle(handle)
-        snippet ? snippet.full_contents : (replacements.has_key?(handle) ? replacements[handle] : '')
+        snippet ? snippet.full_contents : (replacements.has_key?(handle) ? replacements[handle] : default_replacements[handle])
       end
     end
   end

@@ -4,26 +4,10 @@ class Flogiston::Template < Flogiston::AbstractPage
   validates_uniqueness_of :handle
   validates_presence_of   :handle
 
-  class << self
-    def expand(text, replacements)
-      return '' unless text
-
-      replacements = replacements.stringify_keys
-
-      text.gsub(/\{\{\s*\w+\s*\}\}/) do |pattern|
-        handle = pattern.match(/\w+/)[0]
-        if handle == 'contents'
-          if replacements.has_key?(handle)
-            replacements[handle]
-          else
-            '{{ contents }}'
-          end
-        else
-        snippet = Snippet.find_by_handle(handle)
-        snippet ? snippet.full_contents : (replacements.has_key?(handle) ? replacements[handle] : '')
-        end
-      end
-    end
+  def self.default_replacements
+    defaults = super
+    defaults['contents'] = '{{ contents }}'
+    defaults
   end
 
   def full_contents(replacements = {})
