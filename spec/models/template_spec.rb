@@ -116,6 +116,9 @@ describe Template do
       before do
         @template.contents = 'testing'
 
+        @expanded = 'expanded template contents'
+        Template.stubs(:expand).returns(@expanded)
+
         @formatted = 'formatted template contents'
         @formatter = Object.new
         @formatter.stubs(:process).returns(@formatted)
@@ -131,14 +134,24 @@ describe Template do
         lambda { @template.formatted }.should_not raise_error(ArgumentError)
       end
 
+      it 'should expand the template contents, passing along the given replacements' do
+        replacements = { 'thing' => 'stuff' }
+        Template.expects(:expand).with(@template.contents, replacements)
+        @template.formatted(replacements)
+      end
+
+      it 'should default the replacements to the empty hash' do
+        Template.expects(:expand).with(@template.contents, {})
+        @template.formatted
+      end
+
       it 'should get the template formatter' do
         @template.expects(:formatter).returns(@formatter)
         @template.formatted
       end
 
-      it 'should pass the template contents to the formatter for formatting' do
-        @template.contents = 'some contents'
-        @formatter.expects(:process).with(@template.contents).returns(@formatted)
+      it 'should pass the expanded contents to the formatter for formatting' do
+        @formatter.expects(:process).with(@expanded).returns(@formatted)
         @template.formatted
       end
 
