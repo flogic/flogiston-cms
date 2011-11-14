@@ -63,33 +63,128 @@ describe Template do
   end
   
   describe 'full contents' do
-    before do
-      @formatted = 'formatted template content'
-      @template.stubs(:formatted).returns(@formatted)
+    describe 'unit tests' do
+      before do
+        @formatted = 'formatted template content'
+        @template.stubs(:formatted).returns(@formatted)
+
+        @expanded = 'expanded template contents'
+        Template.stubs(:expand).returns(@expanded)
+      end
+
+      it 'should accept a hash of replacements' do
+        lambda { @template.full_contents(:a => 'b') }.should_not raise_error(ArgumentError)
+      end
+
+      it 'should not require a hash of replacements' do
+        lambda { @template.full_contents }.should_not raise_error(ArgumentError)
+      end
+
+      it 'should get the formatted contents, passing the given replacements' do
+        replacements = { 'thing' => 'other' }
+        @template.expects(:formatted).with(replacements)
+        @template.full_contents(replacements)
+      end
+
+      it "should not pass the 'contents' replacement when providing formatting replacements" do
+        replacements = { 'thing' => 'other', 'a' => 'b', 'contents' => 'wooo' }
+        format_replacements = replacements.dup
+        format_replacements.delete('contents')
+
+        @template.expects(:formatted).with(format_replacements)
+        @template.full_contents(replacements)
+      end
+
+      it 'should default the formatting replacements to the empty hash' do
+        @template.expects(:formatted).with({})
+        @template.full_contents
+      end
+
+      it "should expand the formatted contents, passing only the 'contents' replacement" do
+        replacements = { 'thing' => 'other', 'a' => 'b', 'contents' => 'wooo' }
+        Template.expects(:expand).with(@formatted, 'contents' => replacements['contents'])
+        @template.full_contents(replacements)
+      end
+
+      it "should default the expansion replacements to a 'contents' => nil hash" do
+        Template.expects(:expand).with(@formatted, { 'contents' => nil })
+        @template.full_contents
+      end
+
+      it 'should return the expanded contents' do
+        Template.stubs(:expand).returns(@expanded)
+        @template.full_contents.should == @expanded
+      end
     end
 
-    it 'should accept a hash of replacements' do
-      lambda { @template.full_contents(:a => 'b') }.should_not raise_error(ArgumentError)
-    end
+    describe 'fully integrated' do
+      before do
+        @template.format = 'haml'
+      end
 
-    it 'should not require a hash of replacements' do
-      lambda { @template.full_contents }.should_not raise_error(ArgumentError)
-    end
+      it 'should handle simple HAML well' do
+        @template.contents = %Q[
+#hey
+  .yo
+]
+        result = @template.full_contents
+        result.should match(/<div id='hey'>\s*<div class='yo'>\s*<\/div>\s*<\/div>/)
+      end
 
-    it 'should get the formatted contents, passing the given replacements' do
-      replacements = { 'thing' => 'other' }
-      @template.expects(:formatted).with(replacements)
-      @template.full_contents(replacements)
-    end
+      it 'should include provided replacement content' do
+        @template.contents = %Q[
+#hey
+  .yo
+    {{ contents }}
+]
+        result = @template.full_contents('contents' => 'this is test contents')
+        result.should match(/<div class='yo'>\s*this is test contents\s*<\/div>/)
+      end
 
-    it 'should default the replacements to the empty hash' do
-      @template.expects(:formatted).with({})
-      @template.full_contents
-    end
+      it 'should work with view helpers and replacements' do
+        @template.contents = %Q[
+#hey
+  .yo
+    =link_to 'something', '{{ location }}'
+]
+        link = 'someplace'
+        result = @template.full_contents('location' => link)
+        result.should match(/<div class='yo'>\s*<a href="#{link}">something<\/a>\s*<\/div>/)
+      end
 
-    it 'should return the formatted contents' do
-      @template.stubs(:formatted).returns(@formatted)
-      @template.full_contents.should == @formatted
+      it 'should work with custom (not Rails core) helper methods' do
+        module PagesHelper
+          def helper_test(text, color)
+            %Q[<span color="#{color}">#{text}</span>]
+          end
+        end
+
+        @template.contents = %Q[
+#hey
+  .yo
+    =helper_test 'something', '{{ color }}'
+]
+        color = 'green'
+        result = @template.full_contents('color' => color)
+        result.should match(/<div class='yo'>\s*<span color="#{color}">something<\/span>\s*<\/div>/)
+      end
+
+      # The template logic uses unless/blank? because the replacement will turn it
+      # into either the empty string or a real value. A simple if condition doesn't work.
+      it 'should work with logic checking the presence of a replacement value' do
+        @template.contents = %Q[
+#hey
+  .yo
+    -unless "{{ header }}".blank?
+      %h2 {{ header }}
+]
+        header = 'somehead'
+        result = @template.full_contents('header' => header)
+        result.should match(/<div class='yo'>\s*<h2>#{header}<\/h2>\s*<\/div>/)
+
+        result = @template.full_contents
+        result.should match(/<div class='yo'>\s*<\/div>/)
+      end
     end
   end
 
@@ -102,14 +197,14 @@ describe Template do
       before do
         @template.contents = 'testing'
 
+        @expanded = 'expanded template contents'
+        Template.stubs(:expand).returns(@expanded)
+
         @formatted = 'formatted template contents'
         @formatter = Object.new
         @formatter.stubs(:process).returns(@formatted)
 
         @template.stubs(:formatter).returns(@formatter)
-
-        @expanded = 'expanded template contents'
-        Template.stubs(:expand).returns(@expanded)
       end
 
       it 'should accept a hash of replacements' do
@@ -120,36 +215,30 @@ describe Template do
         lambda { @template.formatted }.should_not raise_error(ArgumentError)
       end
 
+      it 'should expand the template contents, passing along the given replacements' do
+        replacements = { 'thing' => 'stuff' }
+        Template.expects(:expand).with(@template.contents, replacements)
+        @template.formatted(replacements)
+      end
+
+      it 'should default the replacements to the empty hash' do
+        Template.expects(:expand).with(@template.contents, {})
+        @template.formatted
+      end
+
       it 'should get the template formatter' do
         @template.expects(:formatter).returns(@formatter)
         @template.formatted
       end
 
-      it 'should pass the template contents to the formatter for formatting' do
-        @template.contents = 'some contents'
-        @formatter.expects(:process).with(@template.contents).returns(@formatted)
+      it 'should pass the expanded contents to the formatter for formatting' do
+        @formatter.expects(:process).with(@expanded).returns(@formatted)
         @template.formatted
       end
 
-      it 'should expand the formatted template contents' do
-        Template.expects(:expand).with(@formatted, {}).returns(@expanded)
-        @template.formatted
-      end
-
-      it 'should pass the given replacements to expansion' do
-        replacements = { 'title' => 'test title', 'color' => 'blue' }
-        Template.expects(:expand).with(@formatted, replacements).returns(@expanded)
-        @template.formatted(replacements)
-      end
-
-      it 'should default replacements to the empty hash' do
-        Template.expects(:expand).with(@formatted, {}).returns(@expanded)
-        @template.formatted
-      end
-
-      it 'should return the results of expanding the formatted template contents' do
-        Template.stubs(:expand).returns(@expanded)
-        @template.formatted.should == @expanded
+      it 'should return the formatted template contents' do
+        @formatter.stubs(:process).returns(@formatted)
+        @template.formatted.should == @formatted
       end
     end
 
