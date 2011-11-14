@@ -85,19 +85,28 @@ describe Template do
       @template.full_contents(replacements)
     end
 
+    it "should not pass the 'contents' replacement when providing formatting replacements" do
+      replacements = { 'thing' => 'other', 'a' => 'b', 'contents' => 'wooo' }
+      format_replacements = replacements.dup
+      format_replacements.delete('contents')
+
+      @template.expects(:formatted).with(format_replacements)
+      @template.full_contents(replacements)
+    end
+
     it 'should default the formatting replacements to the empty hash' do
       @template.expects(:formatted).with({})
       @template.full_contents
     end
 
-    it 'should expand the formatted contents, passing the given replacements' do
-      replacements = { 'thing' => 'other' }
-      Template.expects(:expand).with(@formatted, replacements)
+    it "should expand the formatted contents, passing only the 'contents' replacement" do
+      replacements = { 'thing' => 'other', 'a' => 'b', 'contents' => 'wooo' }
+      Template.expects(:expand).with(@formatted, 'contents' => replacements['contents'])
       @template.full_contents(replacements)
     end
 
-    it 'should default the expansion replacements to the empty hash' do
-      Template.expects(:expand).with(@formatted, {})
+    it "should default the expansion replacements to a 'contents' => nil hash" do
+      Template.expects(:expand).with(@formatted, { 'contents' => nil })
       @template.full_contents
     end
 

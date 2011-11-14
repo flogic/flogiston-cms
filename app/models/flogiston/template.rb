@@ -5,8 +5,9 @@ class Flogiston::Template < Flogiston::AbstractPage
   validates_presence_of   :handle
 
   def full_contents(replacements = {})
+    replacement_contents = replacements.delete('contents')
     processed = formatted(replacements)
-    self.class.expand(processed, replacements)
+    self.class.expand(processed, 'contents' => replacement_contents)
   end
 
   def formatted(replacements = {})
