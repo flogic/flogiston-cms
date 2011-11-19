@@ -3,7 +3,7 @@ class Flogiston::Layout < Flogiston::AbstractPage
   validates_presence_of   :handle
 
   class << self
-    def expand(text, replacements, format)
+    def expand(text, replacements)
       return '' unless text
 
       replacements = replacements.stringify_keys
@@ -12,13 +12,11 @@ class Flogiston::Layout < Flogiston::AbstractPage
         handle = pattern.match(/\w+/)[0]
         snippet = Snippet.find_by_handle(handle)
 
-        if snippet
-          whitespace = pattern.match(/^\s*/)[0]
-          method = format == 'haml' ? :gsub : :sub
-          snippet.full_contents.send(method, /^/, whitespace)
-        else
-          replacements.has_key?(handle) ? replacements[handle] : ''
-        end
+        whitespace = pattern.match(/^\s*/)[0]
+
+        contents = snippet ? snippet.full_contents : replacements.has_key?(handle) ? replacements[handle] : ''
+
+        contents.gsub(/^/, whitespace)
       end
     end
 
@@ -33,7 +31,7 @@ class Flogiston::Layout < Flogiston::AbstractPage
   end
 
   def full_contents(replacements = {})
-    self.class.expand(contents, replacements, format)
+    self.class.expand(contents, replacements)
   end
   
   ### for ActionView Layout fakery
