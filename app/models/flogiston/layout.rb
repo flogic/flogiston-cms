@@ -3,23 +3,6 @@ class Flogiston::Layout < Flogiston::AbstractPage
   validates_presence_of   :handle
 
   class << self
-    def expand(text, replacements)
-      return '' unless text
-
-      replacements = replacements.stringify_keys
-
-      text.gsub(/(^\s*)?\{\{\s*\w+\s*\}\}/) do |pattern|
-        handle = pattern.match(/\w+/)[0]
-        snippet = Snippet.find_by_handle(handle)
-
-        whitespace = pattern.match(/^\s*/)[0]
-
-        contents = snippet ? snippet.full_contents : replacements.has_key?(handle) ? replacements[handle] : ''
-
-        contents.gsub(/^/, whitespace)
-      end
-    end
-
     def default
       first(:conditions => { :default => true })
     end

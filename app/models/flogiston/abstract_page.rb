@@ -11,10 +11,13 @@ class Flogiston::AbstractPage < ActiveRecord::Base
 
       replacements = replacements.stringify_keys
 
-      text.gsub(/\{\{\s*\w+\s*\}\}/) do |pattern|
+      text.gsub(/(^\s*)?\{\{\s*\w+\s*\}\}/) do |pattern|
         handle = pattern.match(/\w+/)[0]
         snippet = Snippet.find_by_handle(handle)
-        snippet ? snippet.full_contents : (replacements.has_key?(handle) ? replacements[handle] : default_replacements[handle])
+        contents = snippet ? snippet.full_contents : (replacements.has_key?(handle) ? replacements[handle] : default_replacements[handle])
+
+        whitespace = pattern.match(/^\s*/)[0]
+        contents.gsub(/^/, whitespace)
       end
     end
   end
