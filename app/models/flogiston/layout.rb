@@ -2,29 +2,8 @@ class Flogiston::Layout < Flogiston::AbstractPage
   validates_uniqueness_of :handle
   validates_presence_of   :handle
 
-  class << self
-    def expand(text, replacements, format)
-      return '' unless text
-
-      replacements = replacements.stringify_keys
-
-      text.gsub(/(^\s*)?\{\{\s*\w+\s*\}\}/) do |pattern|
-        handle = pattern.match(/\w+/)[0]
-        snippet = Snippet.find_by_handle(handle)
-
-        if snippet
-          whitespace = pattern.match(/^\s*/)[0]
-          method = format == 'haml' ? :gsub : :sub
-          snippet.full_contents.send(method, /^/, whitespace)
-        else
-          replacements.has_key?(handle) ? replacements[handle] : ''
-        end
-      end
-    end
-
-    def default
-      first(:conditions => { :default => true })
-    end
+  def self.default
+    first(:conditions => { :default => true })
   end
 
   def make_default!
@@ -33,7 +12,7 @@ class Flogiston::Layout < Flogiston::AbstractPage
   end
 
   def full_contents(replacements = {})
-    self.class.expand(contents, replacements, format)
+    self.class.expand(contents, replacements)
   end
   
   ### for ActionView Layout fakery

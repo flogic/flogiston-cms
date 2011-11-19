@@ -149,7 +149,7 @@ this
         @layout.full_contents.should == contents[:expected]
       end
 
-      it 'should not change snippet identation for non-HAML layouts' do
+      it 'should also indent snippets used in non-HAML layouts' do
         contents = {}
         contents[:layout] = "
 this
@@ -170,10 +170,10 @@ this
   is
     a
     really
-  crazy
-  blah
-boing
-  boom
+      crazy
+      blah
+    boing
+      boom
   test
 "
         contents.each { |k, v|  v.strip! }
@@ -181,6 +181,48 @@ boing
         @layout = Layout.generate!(:format => 'erb', :contents => contents[:layout])
         @snippet = Snippet.generate!(:format => 'raw', :contents => contents[:snippet], :handle => 'thing')
         @layout.full_contents.should == contents[:expected]
+      end
+
+      it 'should keep spacing for replacements' do
+        contents = {}
+        contents[:layout] = "
+this
+  is
+    a {{ thing }}
+  test
+"
+        contents[:expected] = "
+this
+  is
+    a blah
+  test
+"
+        contents.each { |k, v|  v.strip! }
+
+        @layout = Layout.generate!(:format => 'erb', :contents => contents[:layout])
+        @layout.full_contents(:thing => 'blah').should == contents[:expected]
+      end
+
+      it 'should keep spacing for line-starting replacements' do
+        contents = {}
+        contents[:layout] = "
+this
+  is
+    a
+    {{ thing }}
+  test
+"
+        contents[:expected] = "
+this
+  is
+    a
+    blah
+  test
+"
+        contents.each { |k, v|  v.strip! }
+
+        @layout = Layout.generate!(:format => 'erb', :contents => contents[:layout])
+        @layout.full_contents(:thing => 'blah').should == contents[:expected]
       end
     end
     
