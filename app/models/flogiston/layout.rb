@@ -2,10 +2,8 @@ class Flogiston::Layout < Flogiston::AbstractPage
   validates_uniqueness_of :handle
   validates_presence_of   :handle
 
-  class << self
-    def default
-      first(:conditions => { :default => true })
-    end
+  def self.default
+    first(:conditions => { :default => true })
   end
 
   def make_default!
